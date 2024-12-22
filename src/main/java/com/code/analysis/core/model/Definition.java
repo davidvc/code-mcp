@@ -1,67 +1,53 @@
 package com.code.analysis.core.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Builder;
 
 /**
- * Represents a code definition (function, type, variable, etc.).
- * This is a language-agnostic abstraction that can represent different
- * kinds of definitions across various programming languages.
+ * Represents a definition in code, such as a class, method, or variable.
+ * This class captures the essential properties of any named construct in code.
  */
-public interface Definition {
-    /**
-     * Gets the unique identifier for this definition.
-     * 
-     * @return Unique identifier (e.g., fully qualified name)
-     */
-    String getId();
+@Builder
+public record Definition(
+  String id,
+  String name,
+  DefinitionKind kind,
+  Scope scope,
+  Position position,
+  List<Reference> references,
+  Map<String, Object> metadata
+) {
+  public Definition {
+    references = Collections.unmodifiableList(
+      new ArrayList<>(references != null ? references : Collections.emptyList())
+    );
+    metadata = Collections.unmodifiableMap(
+      new HashMap<>(metadata != null ? metadata : Collections.emptyMap())
+    );
+  }
 
-    /**
-     * Gets the simple name of this definition.
-     * 
-     * @return Simple name
-     */
-    String getName();
+  public static class DefinitionBuilder {
 
-    /**
-     * Gets the kind of definition.
-     * 
-     * @return Definition kind
-     */
-    DefinitionKind getKind();
+    private List<Reference> references = new ArrayList<>();
+    private Map<String, Object> metadata = new HashMap<>();
 
-    /**
-     * Gets the scope of this definition.
-     * 
-     * @return Scope information
-     */
-    Scope getScope();
+    public DefinitionBuilder addReference(Reference reference) {
+      this.references.add(reference);
+      return this;
+    }
 
-    /**
-     * Gets all references to this definition.
-     * 
-     * @return List of references
-     */
-    List<Reference> getReferences();
+    public DefinitionBuilder addReferences(List<Reference> references) {
+      this.references.addAll(references);
+      return this;
+    }
 
-    /**
-     * Gets documentation associated with this definition.
-     * 
-     * @return Documentation or empty if none
-     */
-    Documentation getDocumentation();
-
-    /**
-     * Gets the source position of this definition.
-     * 
-     * @return Source position
-     */
-    Position getPosition();
-
-    /**
-     * Gets language-specific metadata.
-     * 
-     * @return Map of metadata key-value pairs
-     */
-    Map<String, Object> getMetadata();
+    public DefinitionBuilder addMetadata(String key, Object value) {
+      this.metadata.put(key, value);
+      return this;
+    }
+  }
 }

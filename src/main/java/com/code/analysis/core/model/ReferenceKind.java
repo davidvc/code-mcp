@@ -7,21 +7,21 @@ package com.code.analysis.core.model;
  * elements.
  */
 public enum ReferenceKind {
-    /** Direct usage/call of a definition */
-    USE,
+  /** Direct usage/call of a definition */
+  USE,
 
-    /** Modification of a definition */
-    MODIFY,
+  /** Modification of a definition */
+  MODIFY,
 
-    /** Extension/inheritance of a definition */
-    EXTEND,
+  /** Extension/inheritance of a definition */
+  EXTEND,
 
-    /** Implementation of a definition */
-    IMPLEMENT,
+  /** Implementation of a definition */
+  IMPLEMENT,
 
-    /** Import/include of a definition */
-    IMPORT,
+  /** Import/include of a definition */
+  IMPORT,
 
-    /** Other kinds of references */
-    OTHER
+  /** Other kinds of references */
+  OTHER,
 }

@@ -6,21 +6,21 @@ package com.code.analysis.core.model;
  * across various programming languages and tools.
  */
 public enum DocumentationFormat {
-    /** Plain text documentation */
-    PLAIN_TEXT,
+  /** Plain text documentation */
+  PLAIN_TEXT,
 
-    /** Markdown documentation */
-    MARKDOWN,
+  /** Markdown documentation */
+  MARKDOWN,
 
-    /** JavaDoc style documentation */
-    JAVADOC,
+  /** JavaDoc style documentation */
+  JAVADOC,
 
-    /** JSDoc style documentation */
-    JSDOC,
+  /** JSDoc style documentation */
+  JSDOC,
 
-    /** Python docstring style documentation */
-    DOCSTRING,
+  /** Python docstring style documentation */
+  DOCSTRING,
 
-    /** Other documentation formats */
-    OTHER
+  /** Other documentation formats */
+  OTHER,
 }

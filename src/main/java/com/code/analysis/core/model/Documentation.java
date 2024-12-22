@@ -1,46 +1,52 @@
 package com.code.analysis.core.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Builder;
 
 /**
- * Represents documentation for a code element.
- * This is a language-agnostic abstraction that can represent different
- * kinds of documentation across various programming languages.
+ * Represents documentation associated with code elements.
+ * This class captures documentation content and metadata.
  */
-public interface Documentation {
-    /**
-     * Gets the main description text.
-     * 
-     * @return Description text
-     */
-    String getDescription();
+@Builder
+public record Documentation(
+  String id,
+  String description,
+  DocumentationFormat format,
+  Position position,
+  List<DocumentationTag> tags,
+  Map<String, Object> metadata
+) {
+  public Documentation {
+    tags = Collections.unmodifiableList(
+      new ArrayList<>(tags != null ? tags : Collections.emptyList())
+    );
+    metadata = Collections.unmodifiableMap(
+      new HashMap<>(metadata != null ? metadata : Collections.emptyMap())
+    );
+  }
 
-    /**
-     * Gets the documentation format.
-     * 
-     * @return Documentation format
-     */
-    DocumentationFormat getFormat();
+  public static class DocumentationBuilder {
 
-    /**
-     * Gets the position where this documentation appears.
-     * 
-     * @return Documentation position
-     */
-    Position getPosition();
+    private List<DocumentationTag> tags = new ArrayList<>();
+    private Map<String, Object> metadata = new HashMap<>();
 
-    /**
-     * Gets all tags/annotations in this documentation.
-     * 
-     * @return List of documentation tags
-     */
-    List<DocumentationTag> getTags();
+    public DocumentationBuilder addTag(DocumentationTag tag) {
+      this.tags.add(tag);
+      return this;
+    }
 
-    /**
-     * Gets language-specific metadata.
-     * 
-     * @return Map of metadata key-value pairs
-     */
-    Map<String, Object> getMetadata();
+    public DocumentationBuilder addTags(List<DocumentationTag> tags) {
+      this.tags.addAll(tags);
+      return this;
+    }
+
+    public DocumentationBuilder addMetadata(String key, Object value) {
+      this.metadata.put(key, value);
+      return this;
+    }
+  }
 }

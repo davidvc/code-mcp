@@ -1,45 +1,35 @@
 package com.code.analysis.core.model;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import lombok.Builder;
 
 /**
- * Represents a reference to a definition in code.
- * This is a language-agnostic abstraction that can represent different
- * kinds of references across various programming languages.
+ * Represents a reference to another code element.
+ * This class captures relationships between different parts of code.
  */
-public interface Reference {
-    /**
-     * Gets the definition being referenced.
-     * 
-     * @return Referenced definition
-     */
-    Definition getTarget();
+@Builder
+public record Reference(
+  String id,
+  String name,
+  ReferenceKind kind,
+  Position position,
+  Map<String, Object> metadata
+) {
+  public Reference {
+    metadata = Collections.unmodifiableMap(
+      new HashMap<>(metadata != null ? metadata : Collections.emptyMap())
+    );
+  }
 
-    /**
-     * Gets the kind of reference.
-     * 
-     * @return Reference kind
-     */
-    ReferenceKind getKind();
+  public static class ReferenceBuilder {
 
-    /**
-     * Gets the position where this reference occurs.
-     * 
-     * @return Reference position
-     */
-    Position getPosition();
+    private Map<String, Object> metadata = new HashMap<>();
 
-    /**
-     * Gets the scope containing this reference.
-     * 
-     * @return Containing scope
-     */
-    Scope getScope();
-
-    /**
-     * Gets language-specific metadata about this reference.
-     * 
-     * @return Map of metadata key-value pairs
-     */
-    Map<String, Object> getMetadata();
+    public ReferenceBuilder addMetadata(String key, Object value) {
+      this.metadata.put(key, value);
+      return this;
+    }
+  }
 }

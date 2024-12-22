@@ -116,6 +116,11 @@ The project uses Neo4j in two ways:
    - Maximum method complexity: 5
    - Maximum method length: 25 lines
    - Use meaningful variable and method names
+   - Make your code self-documenting and avoid comments unless needed to explain intent
+   - Prefer composition over inheritance
+   - Use Lombok annotations to reduce boilerplate code
+   - Introduce interfaces when needed, but do not default to always using interfaces
+   - Make classes immutable wherever possible
 
 2. **Code Style and Formatting**
 

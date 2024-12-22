@@ -1,53 +1,51 @@
 package com.code.analysis.core.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Builder;
 
 /**
- * Represents the scope and accessibility of a definition.
- * This is a language-agnostic abstraction that can represent different
- * scoping rules across various programming languages.
+ * Represents a scope in code, such as a block, method, or class scope.
+ * This class captures the level and position information of a scope.
  */
-public interface Scope {
-    /**
-     * Gets the scope level.
-     * 
-     * @return Scope level
-     */
-    ScopeLevel getLevel();
+@Builder
+public record Scope(
+  ScopeLevel level,
+  Position start,
+  Position end,
+  List<Scope> children,
+  Map<String, Object> metadata
+) {
+  public Scope {
+    children = Collections.unmodifiableList(
+      new ArrayList<>(children != null ? children : Collections.emptyList())
+    );
+    metadata = Collections.unmodifiableMap(
+      new HashMap<>(metadata != null ? metadata : Collections.emptyMap())
+    );
+  }
 
-    /**
-     * Gets the containing scope, if any.
-     * 
-     * @return Parent scope or empty if this is a top-level scope
-     */
-    Scope getParent();
+  public static class ScopeBuilder {
 
-    /**
-     * Gets child scopes contained within this scope.
-     * 
-     * @return List of child scopes
-     */
-    List<Scope> getChildren();
+    private List<Scope> children = new ArrayList<>();
+    private Map<String, Object> metadata = new HashMap<>();
 
-    /**
-     * Gets the start position of this scope in the source code.
-     * 
-     * @return Start position
-     */
-    Position getStart();
+    public ScopeBuilder addChild(Scope child) {
+      this.children.add(child);
+      return this;
+    }
 
-    /**
-     * Gets the end position of this scope in the source code.
-     * 
-     * @return End position
-     */
-    Position getEnd();
+    public ScopeBuilder addChildren(List<Scope> children) {
+      this.children.addAll(children);
+      return this;
+    }
 
-    /**
-     * Gets language-specific metadata about this scope.
-     * 
-     * @return Map of metadata key-value pairs
-     */
-    Map<String, Object> getMetadata();
+    public ScopeBuilder addMetadata(String key, Object value) {
+      this.metadata.put(key, value);
+      return this;
+    }
+  }
 }

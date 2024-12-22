@@ -7,21 +7,21 @@ package com.code.analysis.core.model;
  * from global scope down to block-level scope.
  */
 public enum ScopeLevel {
-    /** Global/module level scope */
-    GLOBAL,
+  /** Global/module level scope */
+  GLOBAL,
 
-    /** Package/namespace level scope */
-    PACKAGE,
+  /** Package/namespace level scope */
+  PACKAGE,
 
-    /** Type (class/interface) level scope */
-    TYPE,
+  /** Type (class/interface) level scope */
+  TYPE,
 
-    /** Function/method level scope */
-    FUNCTION,
+  /** Function/method level scope */
+  FUNCTION,
 
-    /** Block level scope */
-    BLOCK,
+  /** Block level scope */
+  BLOCK,
 
-    /** Other scope levels */
-    OTHER
+  /** Other scope levels */
+  OTHER,
 }
