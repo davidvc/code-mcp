@@ -17,10 +17,10 @@ import java.util.UUID;
 
 class JavaDefinitionExtractor {
 
-  List<Definition> extract(CompilationUnit cu) {
+  List<Definition> extract(CompilationUnit compilationUnit) {
     var definitions = new ArrayList<Definition>();
 
-    cu
+    compilationUnit
       .findAll(ClassOrInterfaceDeclaration.class)
       .forEach(classDecl -> {
         definitions.add(extractClassDefinition(classDecl));

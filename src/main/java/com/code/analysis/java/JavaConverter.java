@@ -62,14 +62,14 @@ class JavaConverter {
    * @throws IllegalArgumentException if cu is null
    * @throws IllegalStateException    if conversion fails
    */
-  CodeUnit convert(CompilationUnit cu) {
-    ModelValidator.validateNotNull(cu, "CompilationUnit");
+  CodeUnit convert(CompilationUnit compilationUnit) {
+    ModelValidator.validateNotNull(compilationUnit, "CompilationUnit");
 
     try {
       var definitions = new ArrayList<Definition>();
 
       // Convert classes and interfaces
-      cu
+      compilationUnit
         .findAll(ClassOrInterfaceDeclaration.class)
         .forEach(decl -> {
           if (decl.isInterface()) {
@@ -87,12 +87,12 @@ class JavaConverter {
         });
 
       // Convert enums
-      cu
+      compilationUnit
         .findAll(EnumDeclaration.class)
         .forEach(decl -> definitions.add(classConverter.convertEnum(decl)));
 
       // Get file-level documentation if any
-      var documentation = cu
+      var documentation = compilationUnit
         .getAllContainedComments()
         .stream()
         .filter(comment -> comment instanceof JavadocComment)
@@ -103,16 +103,16 @@ class JavaConverter {
       Map<String, Object> metadata = new HashMap<>();
       metadata.put(
         "packageName",
-        cu.getPackageDeclaration().map(pkg -> pkg.getNameAsString()).orElse("")
+        compilationUnit.getPackageDeclaration().map(pkg -> pkg.getNameAsString()).orElse("")
       );
       metadata.put(
         "imports",
-        cu.getImports().stream().map(imp -> imp.getNameAsString()).collect(Collectors.toList())
+        compilationUnit.getImports().stream().map(imp -> imp.getNameAsString()).collect(Collectors.toList())
       );
 
       return CodeUnit.builder()
         .id(UUID.randomUUID().toString())
-        .name(cu.getStorage().map(storage -> storage.getFileName()).orElse("unknown"))
+        .name(compilationUnit.getStorage().map(storage -> storage.getFileName()).orElse("unknown"))
         .type(UnitType.FILE)
         .metadata(metadata)
         .definitions(definitions)

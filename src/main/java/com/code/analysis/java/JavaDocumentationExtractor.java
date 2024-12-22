@@ -24,22 +24,22 @@ class JavaDocumentationExtractor {
   /**
    * Extracts all documentation from a compilation unit.
    *
-   * @param cu The compilation unit to process
+   * @param compilationUnit The compilation unit to process
    * @return A list of Documentation objects
    */
-  List<Documentation> extract(CompilationUnit cu) {
-    var docs = new ArrayList<Documentation>();
+  List<Documentation> extract(CompilationUnit compilationUnit) {
+    var documentations = new ArrayList<Documentation>();
 
-    cu
+    compilationUnit
       .getAllContainedComments()
       .forEach(comment -> {
         if (comment instanceof JavadocComment javadocComment) {
           var javadoc = javadocComment.parse();
-          docs.add(convertJavadoc(javadoc, javadocComment));
+          documentations.add(convertJavadoc(javadoc, javadocComment));
         }
       });
 
-    return docs;
+    return documentations;
   }
 
   private Documentation convertJavadoc(Javadoc javadoc, JavadocComment comment) {

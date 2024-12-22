@@ -45,25 +45,25 @@ public class JavaAnalyzer implements CodeAnalyzer {
 
   @Override
   public CodeUnit parseFile(Path path) throws IOException {
-    var result = parser.parse(path);
-    if (!result.isSuccessful()) {
-      throw new IOException("Failed to parse Java file: " + result.getProblems());
+    var parseResult = parser.parse(path);
+    if (!parseResult.isSuccessful()) {
+      throw new IOException("Failed to parse Java file: " + parseResult.getProblems());
     }
 
-    var cu = result
+    var compilationUnit = parseResult
       .getResult()
       .orElseThrow(() -> new IOException("Failed to get compilation unit"));
 
-    return converter.convert(cu);
+    return converter.convert(compilationUnit);
   }
 
   @Override
-  public List<Definition> extractDefinitions(CodeUnit unit) {
-    return new ArrayList<>(unit.definitions());
+  public List<Definition> extractDefinitions(CodeUnit codeUnit) {
+    return new ArrayList<>(codeUnit.definitions());
   }
 
   @Override
-  public List<Documentation> extractDocumentation(CodeUnit unit) {
-    return unit.documentation() != null ? List.of(unit.documentation()) : List.of();
+  public List<Documentation> extractDocumentation(CodeUnit codeUnit) {
+    return codeUnit.documentation() != null ? List.of(codeUnit.documentation()) : List.of();
   }
 }
