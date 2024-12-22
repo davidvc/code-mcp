@@ -60,16 +60,42 @@ flowchart TB
 ### 2.1 Node Types
 
 ```
+[Component]
+- name: string
+- description: string
+- documentation: {
+    inline: string,          // Documentation from code comments
+    markdown: string,        // Documentation from markdown files
+    llmGenerated: string,    // LLM-generated documentation
+    lastUpdated: timestamp
+  }
+- metrics: {
+    cohesion: number,
+    coupling: number
+  }
+
 [File]
 - path: string
 - language: string
 - lastModified: timestamp
 - size: number
+- documentation: {
+    inline: string,          // Documentation from code comments
+    markdown: string,        // Documentation from markdown files
+    llmGenerated: string,    // LLM-generated documentation
+    lastUpdated: timestamp
+  }
 
 [Class]
 - name: string
 - visibility: string
 - abstract: boolean
+- documentation: {
+    inline: string,          // Documentation from code comments
+    markdown: string,        // Documentation from markdown files
+    llmGenerated: string,    // LLM-generated documentation
+    lastUpdated: timestamp
+  }
 - metrics: {
     complexity: number,
     cohesion: number,
@@ -80,6 +106,12 @@ flowchart TB
 - name: string
 - visibility: string
 - static: boolean
+- documentation: {
+    inline: string,          // Documentation from code comments
+    markdown: string,        // Documentation from markdown files
+    llmGenerated: string,    // LLM-generated documentation
+    lastUpdated: timestamp
+  }
 - metrics: {
     complexity: number,
     length: number,
@@ -91,26 +123,33 @@ flowchart TB
 - type: string
 - visibility: string
 - static: boolean
-
-[Documentation]
-- content: string
-- type: enum (comment, docstring, markdown)
-- language: string
+- documentation: {
+    inline: string,          // Documentation from code comments
+    llmGenerated: string,    // LLM-generated documentation
+    lastUpdated: timestamp
+  }
 ```
 
 ### 2.2 Relationship Types
 
 ```
+(Component)-[:CONTAINS]->(Component)    // Hierarchical component structure
+(Component)-[:CONTAINS]->(File)         // Files in a component
+(Component)-[:DEPENDS_ON]->(Component)  // Component dependencies
+
 (File)-[:CONTAINS]->(Class)
 (File)-[:IMPORTS]->(File)
+(File)-[:BELONGS_TO]->(Component)
+
 (Class)-[:EXTENDS]->(Class)
 (Class)-[:IMPLEMENTS]->(Interface)
 (Class)-[:CONTAINS]->(Method)
 (Class)-[:CONTAINS]->(Variable)
+(Class)-[:BELONGS_TO]->(Component)
+
 (Method)-[:CALLS]->(Method)
 (Method)-[:USES]->(Variable)
 (Method)-[:RETURNS]->(Type)
-(Documentation)-[:DESCRIBES]->(Node)
 ```
 
 ## 3. Component Specifications
