@@ -130,13 +130,11 @@ class JavaConverter {
     var begin = node.getBegin().orElseThrow();
     var end = node.getEnd().orElseThrow();
 
-    return ConversionUtils.createScope(
-      isPublic ? ScopeLevel.GLOBAL : ScopeLevel.PACKAGE,
-      begin.line,
-      begin.column,
-      end.line,
-      end.column
-    );
+    return Scope.builder()
+      .level(isPublic ? ScopeLevel.GLOBAL : ScopeLevel.PACKAGE)
+      .start(ConversionUtils.createPosition(begin.line, begin.column))
+      .end(ConversionUtils.createPosition(end.line, end.column))
+      .build();
   }
 
   /**

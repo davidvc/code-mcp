@@ -1,8 +1,6 @@
 package com.code.analysis.core;
 
 import com.code.analysis.core.model.Position;
-import com.code.analysis.core.model.Scope;
-import com.code.analysis.core.model.ScopeLevel;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -45,27 +43,29 @@ public final class ConversionUtils {
   }
 
   /**
-   * Creates a Scope object with start and end positions.
+   * Validates that a string is not null or empty.
    *
-   * @param level       The scope level
-   * @param startLine   Start line number
-   * @param startColumn Start column number
-   * @param endLine     End line number
-   * @param endColumn   End column number
-   * @return A new Scope object
+   * @param value     The string to check
+   * @param fieldName Name of the field being validated
+   * @throws IllegalArgumentException if the string is null or empty
    */
-  public static Scope createScope(
-    ScopeLevel level,
-    int startLine,
-    int startColumn,
-    int endLine,
-    int endColumn
-  ) {
-    return Scope.builder()
-      .level(level)
-      .start(createPosition(startLine, startColumn))
-      .end(createPosition(endLine, endColumn))
-      .build();
+  public static void validateNotEmpty(String value, String fieldName) {
+    if (value == null || value.trim().isEmpty()) {
+      throw new IllegalArgumentException(fieldName + " cannot be null or empty");
+    }
+  }
+
+  /**
+   * Validates that an object is not null.
+   *
+   * @param value     The object to check
+   * @param fieldName Name of the field being validated
+   * @throws IllegalArgumentException if the object is null
+   */
+  public static void validateNotNull(Object value, String fieldName) {
+    if (value == null) {
+      throw new IllegalArgumentException(fieldName + " cannot be null");
+    }
   }
 
   /**
@@ -94,31 +94,5 @@ public final class ConversionUtils {
     }
 
     return true;
-  }
-
-  /**
-   * Validates that a string is not null or empty.
-   *
-   * @param value     The string to check
-   * @param fieldName Name of the field being validated
-   * @throws IllegalArgumentException if the string is null or empty
-   */
-  public static void validateNotEmpty(String value, String fieldName) {
-    if (value == null || value.trim().isEmpty()) {
-      throw new IllegalArgumentException(fieldName + " cannot be null or empty");
-    }
-  }
-
-  /**
-   * Validates that an object is not null.
-   *
-   * @param value     The object to check
-   * @param fieldName Name of the field being validated
-   * @throws IllegalArgumentException if the object is null
-   */
-  public static void validateNotNull(Object value, String fieldName) {
-    if (value == null) {
-      throw new IllegalArgumentException(fieldName + " cannot be null");
-    }
   }
 }
