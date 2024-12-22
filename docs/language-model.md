@@ -15,63 +15,13 @@ classDiagram
     Reference --> Definition
     Reference --> Scope
 
-    class CodeUnit {
-        +String id
-        +String name
-        +UnitType type
-        +List~Definition~ definitions
-        +List~Dependency~ dependencies
-        +Documentation documentation
-        +Map metadata
-    }
-
-    class Definition {
-        +String id
-        +String name
-        +DefinitionKind kind
-        +Scope scope
-        +List~Reference~ references
-        +Documentation documentation
-        +Position position
-        +Map metadata
-    }
-
-    class Reference {
-        +Definition target
-        +ReferenceKind kind
-        +Position position
-        +Scope scope
-        +Map metadata
-    }
-
-    class Documentation {
-        +String description
-        +DocumentationFormat format
-        +Position position
-        +List~DocumentationTag~ tags
-        +Map metadata
-    }
-
-    class Scope {
-        +ScopeLevel level
-        +Scope parent
-        +List~Scope~ children
-        +Position start
-        +Position end
-        +Map metadata
-    }
-
-    class DocumentationTag {
-        +String name
-        +String value
-        +Map attributes
-    }
-
-    class Position {
-        +int line
-        +int column
-        +int offset
-    }
+    class CodeUnit
+    class Definition
+    class Reference
+    class Documentation
+    class Scope
+    class DocumentationTag
+    class Position
 ```
 
 ## Component Descriptions
