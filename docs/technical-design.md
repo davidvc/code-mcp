@@ -29,421 +29,224 @@ flowchart TB
 ### 1.2 Component Descriptions
 
 1. **Code Analyzer**
-
-   - Language-specific parsers for code analysis
-   - AST (Abstract Syntax Tree) generators
-   - Metrics calculators
-   - Documentation extractors
+   - Parses source code into language-agnostic models
+   - Extracts code structure and relationships
+   - Analyzes code metrics and quality
+   - Processes documentation and comments
 
 2. **Knowledge Graph**
-
-   - Graph database (Neo4j recommended)
-   - Entity manager
-   - Relationship manager
-   - Update manager
+   - Stores code analysis results
+   - Maintains relationships between code entities
+   - Tracks code evolution over time
+   - Enables efficient querying and traversal
 
 3. **Query Engine**
-
-   - Natural language query parser
-   - Graph traversal engine
-   - Response formatter
-   - Cache manager
+   - Processes natural language queries
+   - Traverses knowledge graph
+   - Formats responses for clients
+   - Manages query caching
 
 4. **MCP Interface Layer**
-   - Tool and resource registration
-   - Request handling
-   - Response formatting
-   - Error handling
-
-## 2. Knowledge Graph Schema
-
-### 2.1 Node Types
-
-```
-[Component]
-- name: string
-- description: string
-- documentation: {
-    inline: string,          // Documentation from code comments
-    markdown: string,        // Documentation from markdown files
-    llmGenerated: string,    // LLM-generated documentation
-    lastUpdated: timestamp
-  }
-- metrics: {
-    cohesion: number,
-    coupling: number
-  }
-
-[File]
-- path: string
-- language: string
-- lastModified: timestamp
-- size: number
-- documentation: {
-    inline: string,          // Documentation from code comments
-    markdown: string,        // Documentation from markdown files
-    llmGenerated: string,    // LLM-generated documentation
-    lastUpdated: timestamp
-  }
-
-[Class]
-- name: string
-- visibility: string
-- abstract: boolean
-- documentation: {
-    inline: string,          // Documentation from code comments
-    markdown: string,        // Documentation from markdown files
-    llmGenerated: string,    // LLM-generated documentation
-    lastUpdated: timestamp
-  }
-- metrics: {
-    complexity: number,
-    cohesion: number,
-    coupling: number
-  }
-
-[Method]
-- name: string
-- visibility: string
-- static: boolean
-- documentation: {
-    inline: string,          // Documentation from code comments
-    markdown: string,        // Documentation from markdown files
-    llmGenerated: string,    // LLM-generated documentation
-    lastUpdated: timestamp
-  }
-- metrics: {
-    complexity: number,
-    length: number,
-    parameters: number
-  }
-
-[Variable]
-- name: string
-- type: string
-- visibility: string
-- static: boolean
-- documentation: {
-    inline: string,          // Documentation from code comments
-    llmGenerated: string,    // LLM-generated documentation
-    lastUpdated: timestamp
-  }
-```
-
-### 2.2 Relationship Types
-
-```
-(Component)-[:CONTAINS]->(Component)    // Hierarchical component structure
-(Component)-[:CONTAINS]->(File)         // Files in a component
-(Component)-[:DEPENDS_ON]->(Component)  // Component dependencies
-
-(File)-[:CONTAINS]->(Class)
-(File)-[:IMPORTS]->(File)
-(File)-[:BELONGS_TO]->(Component)
-
-(Class)-[:EXTENDS]->(Class)
-(Class)-[:IMPLEMENTS]->(Interface)
-(Class)-[:CONTAINS]->(Method)
-(Class)-[:CONTAINS]->(Variable)
-(Class)-[:BELONGS_TO]->(Component)
-
-(Method)-[:CALLS]->(Method)
-(Method)-[:USES]->(Variable)
-(Method)-[:RETURNS]->(Type)
-```
-
-## 3. Component Specifications
-
-### 3.1 Code Analyzer
-
-#### Language Support
-
-- Initial support: Java
-- Future support: Python, JavaScript/TypeScript
-- Extensible architecture for adding new languages
-- Language-specific parser plugins
-
-#### Analysis Features
-
-```java
-public interface CodeAnalyzer {
-  AST parseFile(Path path) throws IOException;
-  CodeMetrics extractMetrics(AST ast);
-  List<Relationship> extractRelationships(AST ast);
-  List<Documentation> extractDocumentation(AST ast);
-}
-
-public interface CodeMetrics {
-  int getComplexity();
-  double getCohesion();
-  double getCoupling();
-  int getLineCount();
-  int getCommentCount();
-  // Additional metrics
-}
-
-```
-
-### 3.2 Knowledge Graph Manager
-
-#### Graph Operations
-
-```java
-public interface GraphManager {
-  Node addNode(NodeType type, Map<String, Object> properties);
-  Relationship addRelationship(Node from, Node to, RelationType type);
-  Node updateNode(Node node, Map<String, Object> properties);
-  void deleteNode(Node node);
-  QueryResult query(GraphQuery query);
-}
-
-```
-
-### 3.3 Query Engine
-
-#### Query Types
-
-```java
-public interface QueryEngine {
-  StructuredQuery parseNaturalLanguage(String query);
-  QueryResult executeQuery(StructuredQuery query);
-  FormattedResponse formatResponse(QueryResult result);
-}
-
-public enum QueryType {
-  SUMMARY,
-  ARCHITECTURE,
-  COMPONENT,
-  QUALITY,
-  RELATIONSHIP,
-}
-
-```
-
-## 4. API Specifications
-
-### 5.1 MCP Tools
-
-```java
-public interface MCPTools {
-  public record AnalyzeInput(
-    String path,
-    Optional<List<String>> languages,
-    Optional<List<String>> excludePaths
-  ) {}
-
-  public record AnalyzeOutput(
-    Status status,
-    Optional<CodebaseMetrics> metrics,
-    Optional<String> error
-  ) {}
-
-  public record QueryInput(String query, Optional<QueryContext> context) {}
-
-  public record QueryOutput(QueryResult result, double confidence) {}
-
-  public record MetricsInput(Optional<String> path, Optional<EntityType> type) {}
-
-  public record MetricsOutput(List<Metrics> metrics) {}
-
-  AnalyzeOutput analyzeCodebase(AnalyzeInput input);
-  QueryOutput query(QueryInput input);
-  MetricsOutput getMetrics(MetricsInput input);
-}
-
-public enum Status {
-  SUCCESS,
-  ERROR,
-}
-
-public enum EntityType {
-  FILE,
-  CLASS,
-  METHOD,
-}
-
-```
-
-### 5.2 MCP Resources
-
-```java
-public interface MCPResources {
-  public record Resource(String uri, String type) {}
-
-  Resource CODEBASE = new Resource("codebase://summary", "json");
-  Resource METRICS = new Resource("codebase://metrics/{path}", "json");
-  Resource DOCUMENTATION = new Resource("codebase://docs/{path}", "markdown");
-}
-
-```
-
-## 6. Performance Considerations
-
-### 6.1 Optimization Strategies
-
-1. **Incremental Updates**
-
-   - Track file changes using checksums
-   - Update only modified components
-   - Maintain relationship cache
-
-2. **Query Optimization**
-
-   - Implement query result caching
-   - Use graph traversal optimization
-   - Index frequently accessed nodes
-
-3. **Memory Management**
-   - Implement lazy loading for large components
-   - Use streaming for large file processing
-   - Implement garbage collection for outdated data
-
-### 6.2 Scalability Considerations
-
-1. **Large Codebases**
-
-   - Parallel processing for analysis
-   - Distributed graph storage
-   - Sharding strategies
-
-2. **Concurrent Access**
-   - Read/write locks
-   - Transaction management
-   - Version control integration
-
-## 7. Error Handling
-
-### 7.1 Error Categories
-
-1. **Analysis Errors**
-
-   - Parsing failures
-   - Unsupported language features
-   - Invalid file formats
-
-2. **Graph Errors**
-
-   - Database connection issues
-   - Transaction failures
-   - Constraint violations
-
-3. **Query Errors**
-   - Invalid query format
-   - Timeout issues
-   - Resource constraints
-
-### 7.2 Error Recovery
-
-1. **Automatic Recovery**
-
-   - Retry mechanisms
-   - Fallback strategies
-   - Auto-healing procedures
-
-2. **Manual Intervention**
-   - Error logging
-   - Administrative tools
-   - Recovery procedures
-
-## 8. Security Considerations
-
-1. **Access Control**
-
-   - Role-based access
-   - Authentication integration
-   - Audit logging
-
-2. **Data Protection**
-   - Encryption at rest
-   - Secure communication
-   - Data sanitization
-
-## 9. Testing Strategy
-
-### 9.1 Test Categories
-
-1. **Unit Tests**
-
-   - Component-level testing
-   - Mock integration points
-   - Error handling verification
-
-2. **Integration Tests**
-
-   - Cross-component testing
-   - Database integration
-   - API verification
-
-3. **Performance Tests**
-   - Load testing
-   - Scalability testing
-   - Resource utilization
-
-### 9.2 Test Implementation
-
-```java
-@Test
-class CodeAnalyzerTest {
-
-  @Test
-  void shouldParseJavaFilesCorrectly() throws IOException {
-    CodeAnalyzer analyzer = new CodeAnalyzer();
-    AST ast = analyzer.parseFile(Path.of("Example.java"));
-    assertThat(ast).hasValidStructure();
-  }
-}
-
-@Test
-class QueryEngineTest {
-
-  @Test
-  void shouldHandleNaturalLanguageQueries() {
-    QueryEngine engine = new QueryEngine();
-    QueryResult result = engine.query("Show me all classes with high complexity");
-    assertThat(result).containsComplexityMetrics();
-  }
-}
-
-```
-
-## 10. Deployment Considerations
-
-### 10.1 Requirements
-
-1. **System Requirements**
-
-   - Neo4j database
-   - JDK 17 or higher
-   - JavaParser library
-   - Neo4j Java driver
-   - Sufficient storage and memory
-
-2. **Configuration**
-   - Environment variables
-   - Database connection
-   - Language support
-   - Cache settings
-
-### 10.2 Installation Process
-
-1. Install dependencies
-2. Configure database
-3. Set up language analyzers
-4. Configure MCP integration
-5. Initialize knowledge graph
-6. Verify installation
-
-## 11. Maintenance and Updates
-
-1. **Regular Maintenance**
-
-   - Database optimization
-   - Cache cleanup
-   - Log rotation
-   - Metric recalculation
-
-2. **Update Procedures**
-   - Schema migrations
-   - API version management
-   - Backward compatibility
-   - Rollback procedures
+   - Exposes analysis capabilities via MCP protocol
+   - Handles client requests
+   - Manages tool and resource registration
+   - Provides error handling and recovery
+
+## 2. Code Analysis Architecture
+
+### 2.1 Language Support
+
+The system is designed to support multiple programming languages through a modular architecture:
+
+1. **Initial Support**
+   - Java (primary focus)
+   - Support for classes, interfaces, methods, and documentation
+
+2. **Future Languages**
+   - Python
+   - JavaScript/TypeScript
+   - Additional languages as needed
+
+3. **Language-Agnostic Model**
+   - Common representation for all languages
+   - Unified handling of code structures
+   - Consistent documentation format
+   - Standard metrics calculations
+
+### 2.2 Analysis Components
+
+1. **Parser Layer**
+   - Language-specific parsers
+   - AST generation
+   - Symbol resolution
+   - Type inference
+
+2. **Converter Layer**
+   - Transforms language-specific ASTs to common model
+   - Specialized converters for:
+     * Classes and interfaces
+     * Methods and constructors
+     * Documentation and comments
+   - Maintains language-specific context
+
+3. **Model Layer**
+   - Code units (files)
+   - Definitions (classes, methods)
+   - Documentation
+   - Relationships
+   - Metrics
+
+4. **Analysis Layer**
+   - Code quality metrics
+   - Complexity calculations
+   - Pattern detection
+   - Best practice validation
+
+### 2.3 Documentation Analysis
+
+1. **Comment Processing**
+   - Language-specific comment formats (Javadoc, JSDoc, etc.)
+   - Markdown documentation
+   - Inline comments
+   - License and copyright information
+
+2. **Documentation Features**
+   - API documentation extraction
+   - Code examples
+   - Parameter descriptions
+   - Return value documentation
+   - Cross-references
+
+### 2.4 Metrics and Analysis
+
+1. **Code Metrics**
+   - Complexity metrics
+   - Size metrics
+   - Documentation coverage
+   - Test coverage
+
+2. **Quality Analysis**
+   - SOLID principles validation
+   - Design pattern detection
+   - Code smell identification
+   - Best practice checking
+
+## 3. Knowledge Graph Design
+
+### 3.1 Node Types
+
+1. **Component Nodes**
+   - Name and description
+   - Documentation
+   - Metrics (cohesion, coupling)
+   - Version information
+
+2. **File Nodes**
+   - Path and language
+   - Last modified timestamp
+   - Size and metrics
+   - Documentation
+
+3. **Class Nodes**
+   - Name and visibility
+   - Abstract/concrete status
+   - Documentation
+   - Quality metrics
+
+4. **Method Nodes**
+   - Name and visibility
+   - Static/instance status
+   - Documentation
+   - Complexity metrics
+
+5. **Variable Nodes**
+   - Name and type
+   - Visibility and scope
+   - Documentation
+   - Usage metrics
+
+### 3.2 Relationships
+
+1. **Structural Relationships**
+   - Component hierarchy
+   - File organization
+   - Class membership
+   - Method ownership
+
+2. **Dependency Relationships**
+   - Component dependencies
+   - File imports
+   - Class inheritance
+   - Method calls
+
+3. **Usage Relationships**
+   - Variable access
+   - Method invocation
+   - Type references
+   - Documentation links
+
+## 4. Query Capabilities
+
+### 4.1 Query Types
+
+1. **Structural Queries**
+   - Component organization
+   - Class hierarchies
+   - Method relationships
+   - Variable usage
+
+2. **Metric Queries**
+   - Code complexity
+   - Documentation coverage
+   - Test coverage
+   - Quality metrics
+
+3. **Documentation Queries**
+   - API documentation
+   - Usage examples
+   - Best practices
+   - Design patterns
+
+### 4.2 Query Features
+
+1. **Natural Language Processing**
+   - Query understanding
+   - Context awareness
+   - Relevance ranking
+   - Result formatting
+
+2. **Performance Optimization**
+   - Query caching
+   - Incremental updates
+   - Parallel processing
+   - Result streaming
+
+## 5. Integration Features
+
+### 5.1 MCP Integration
+
+1. **Tools**
+   - Code analysis
+   - Documentation generation
+   - Metric calculation
+   - Quality assessment
+
+2. **Resources**
+   - Code summaries
+   - Documentation access
+   - Metric reports
+   - Analysis results
+
+### 5.2 Client Integration
+
+1. **Cline Integration**
+   - Code understanding
+   - Documentation access
+   - Quality insights
+   - Refactoring suggestions
+
+2. **Claude Desktop Integration**
+   - Direct code queries
+   - Documentation browsing
+   - Metric visualization
+   - Analysis reports
