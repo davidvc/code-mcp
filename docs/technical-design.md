@@ -119,27 +119,28 @@ flowchart TB
 
 #### Language Support
 
-- Initial support: JavaScript/TypeScript, Python, Java
+- Initial support: Java
+- Future support: Python, JavaScript/TypeScript
 - Extensible architecture for adding new languages
 - Language-specific parser plugins
 
 #### Analysis Features
 
-```typescript
-interface CodeAnalyzer {
-  parseFile(path: string): Promise<AST>;
-  extractMetrics(ast: AST): CodeMetrics;
-  extractRelationships(ast: AST): Relationships[];
-  extractDocumentation(ast: AST): Documentation[];
+```java
+public interface CodeAnalyzer {
+    AST parseFile(Path path) throws IOException;
+    CodeMetrics extractMetrics(AST ast);
+    List<Relationship> extractRelationships(AST ast);
+    List<Documentation> extractDocumentation(AST ast);
 }
 
-interface CodeMetrics {
-  complexity: number;
-  cohesion: number;
-  coupling: number;
-  lineCount: number;
-  commentCount: number;
-  // Additional metrics
+public interface CodeMetrics {
+    int getComplexity();
+    double getCohesion();
+    double getCoupling();
+    int getLineCount();
+    int getCommentCount();
+    // Additional metrics
 }
 ```
 
@@ -147,17 +148,13 @@ interface CodeMetrics {
 
 #### Graph Operations
 
-```typescript
-interface GraphManager {
-  addNode(type: NodeType, properties: Properties): Promise<Node>;
-  addRelationship(
-    from: Node,
-    to: Node,
-    type: RelationType
-  ): Promise<Relationship>;
-  updateNode(node: Node, properties: Properties): Promise<Node>;
-  deleteNode(node: Node): Promise<void>;
-  query(query: GraphQuery): Promise<QueryResult>;
+```java
+public interface GraphManager {
+    Node addNode(NodeType type, Map<String, Object> properties);
+    Relationship addRelationship(Node from, Node to, RelationType type);
+    Node updateNode(Node node, Map<String, Object> properties);
+    void deleteNode(Node node);
+    QueryResult query(GraphQuery query);
 }
 ```
 
@@ -165,19 +162,20 @@ interface GraphManager {
 
 #### Query Types
 
-```typescript
-interface QueryEngine {
-  parseNaturalLanguage(query: string): StructuredQuery;
-  executeQuery(query: StructuredQuery): Promise<QueryResult>;
-  formatResponse(result: QueryResult): FormattedResponse;
+```java
+public interface QueryEngine {
+    StructuredQuery parseNaturalLanguage(String query);
+    QueryResult executeQuery(StructuredQuery query);
+    FormattedResponse formatResponse(QueryResult result);
 }
 
-type QueryType =
-  | "SUMMARY"
-  | "ARCHITECTURE"
-  | "COMPONENT"
-  | "QUALITY"
-  | "RELATIONSHIP";
+public enum QueryType {
+    SUMMARY,
+    ARCHITECTURE,
+    COMPONENT,
+    QUALITY,
+    RELATIONSHIP
+}
 ```
 
 ## 4. Implementation Plan
@@ -186,8 +184,8 @@ type QueryType =
 
 1. Set up Neo4j graph database
 2. Implement basic MCP interface
-3. Create core analyzer for JavaScript/TypeScript
-4. Implement basic query engine
+3. Create core analyzer for Java using JavaParser
+4. Implement basic query engine with Neo4j Java driver
 
 ### 4.2 Phase 2: Enhanced Analysis
 
@@ -207,62 +205,62 @@ type QueryType =
 
 ### 5.1 MCP Tools
 
-```typescript
-interface MCPTools {
-  analyzeCodebase: {
-    input: {
-      path: string;
-      languages?: string[];
-      excludePaths?: string[];
-    };
-    output: {
-      status: "success" | "error";
-      metrics?: CodebaseMetrics;
-      error?: string;
-    };
-  };
+```java
+public interface MCPTools {
+    public record AnalyzeInput(
+        String path,
+        Optional<List<String>> languages,
+        Optional<List<String>> excludePaths
+    ) {}
 
-  query: {
-    input: {
-      query: string;
-      context?: QueryContext;
-    };
-    output: {
-      result: QueryResult;
-      confidence: number;
-    };
-  };
+    public record AnalyzeOutput(
+        Status status,
+        Optional<CodebaseMetrics> metrics,
+        Optional<String> error
+    ) {}
 
-  getMetrics: {
-    input: {
-      path?: string;
-      type?: "file" | "class" | "method";
-    };
-    output: {
-      metrics: Metrics[];
-    };
-  };
+    public record QueryInput(
+        String query,
+        Optional<QueryContext> context
+    ) {}
+
+    public record QueryOutput(
+        QueryResult result,
+        double confidence
+    ) {}
+
+    public record MetricsInput(
+        Optional<String> path,
+        Optional<EntityType> type
+    ) {}
+
+    public record MetricsOutput(
+        List<Metrics> metrics
+    ) {}
+
+    AnalyzeOutput analyzeCodebase(AnalyzeInput input);
+    QueryOutput query(QueryInput input);
+    MetricsOutput getMetrics(MetricsInput input);
+}
+
+public enum Status {
+    SUCCESS, ERROR
+}
+
+public enum EntityType {
+    FILE, CLASS, METHOD
 }
 ```
 
 ### 5.2 MCP Resources
 
-```typescript
-interface MCPResources {
-  codebase: {
-    uri: "codebase://summary";
-    type: "json";
-  };
+```java
+public interface MCPResources {
+    public record Resource(String uri, String type) {}
 
-  metrics: {
-    uri: "codebase://metrics/{path}";
-    type: "json";
-  };
-
-  documentation: {
-    uri: "codebase://docs/{path}";
-    type: "markdown";
-  };
+    Resource CODEBASE = new Resource("codebase://summary", "json");
+    Resource METRICS = new Resource("codebase://metrics/{path}", "json");
+    Resource DOCUMENTATION = new Resource("codebase://docs/{path}", "markdown");
 }
 ```
 
@@ -370,24 +368,26 @@ interface MCPResources {
 
 ### 9.2 Test Implementation
 
-```typescript
-describe("CodeAnalyzer", () => {
-  it("should parse JavaScript files correctly", async () => {
-    const analyzer = new CodeAnalyzer();
-    const ast = await analyzer.parseFile("example.js");
-    expect(ast).toHaveValidStructure();
-  });
-});
+```java
+@Test
+class CodeAnalyzerTest {
+    @Test
+    void shouldParseJavaFilesCorrectly() throws IOException {
+        CodeAnalyzer analyzer = new CodeAnalyzer();
+        AST ast = analyzer.parseFile(Path.of("Example.java"));
+        assertThat(ast).hasValidStructure();
+    }
+}
 
-describe("QueryEngine", () => {
-  it("should handle natural language queries", async () => {
-    const engine = new QueryEngine();
-    const result = await engine.query(
-      "Show me all classes with high complexity"
-    );
-    expect(result).toContainComplexityMetrics();
-  });
-});
+@Test
+class QueryEngineTest {
+    @Test
+    void shouldHandleNaturalLanguageQueries() {
+        QueryEngine engine = new QueryEngine();
+        QueryResult result = engine.query("Show me all classes with high complexity");
+        assertThat(result).containsComplexityMetrics();
+    }
+}
 ```
 
 ## 10. Deployment Considerations
@@ -397,8 +397,9 @@ describe("QueryEngine", () => {
 1. **System Requirements**
 
    - Neo4j database
-   - Node.js runtime
-   - Language-specific toolchains
+   - JDK 17 or higher
+   - JavaParser library
+   - Neo4j Java driver
    - Sufficient storage and memory
 
 2. **Configuration**
