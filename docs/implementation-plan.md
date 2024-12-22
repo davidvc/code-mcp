@@ -17,13 +17,17 @@
   - [x] Implement resource registration
   - [x] Set up communication layer
 
-- [ ] Create core analyzer for Java
+- [x] Create core analyzer for Java
 
-  - [ ] Set up JavaParser integration
-  - [ ] Implement AST generation
-  - [ ] Implement basic metrics calculation
+  - [x] Set up JavaParser integration
+  - [x] Implement AST generation
+  - [x] Create language-agnostic model
+  - [x] Implement converter architecture
+    - [x] Class and interface converter
+    - [x] Method and constructor converter
+    - [x] Documentation converter
   - [ ] Implement relationship extraction
-  - [ ] Implement documentation extraction
+  - [ ] Implement metrics calculation
 
 - [ ] Implement basic query engine
   - [ ] Set up Neo4j Java driver
@@ -35,8 +39,11 @@
 
 - [ ] Add support for Python and JavaScript/TypeScript
 
-  - [ ] Implement Python parser integration
-  - [ ] Implement JavaScript/TypeScript parser integration
+  - [ ] Create language-specific analyzers
+  - [ ] Implement specialized converters
+    - [ ] Class/module converters
+    - [ ] Function/method converters
+    - [ ] Documentation converters
   - [ ] Create language-specific metric calculators
   - [ ] Add language-specific relationship extractors
 
