@@ -110,3 +110,5 @@ After processing directives:
 - Keep method complexity to be no more than 5
 - Keep method length to be no more than 25 lines
 - Use TDD as an approach - wherever possible write tests first, and then build code to support those tests
+- Tests should ensure that changing the internal details doesn't require rewriting tests. Prefer component-level
+  integration tests against a public contract over highly detailed class-level unit tests.

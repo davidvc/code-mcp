@@ -93,14 +93,6 @@ The project uses Neo4j in two ways:
 1. Embedded database for integration tests
 2. Standalone server for development and production
 
-#### Integration Tests
-
-- Uses Neo4j's test harness
-- Automatically manages an embedded database
-- Loads schema and test data from:
-  - `neo4j/scripts/schema.cypher`
-  - `neo4j/data/test_data.cypher`
-
 #### Local Development
 
 1. Start Neo4j server:
@@ -117,22 +109,17 @@ The project uses Neo4j in two ways:
 
 ## Code Style and Guidelines
 
-1. **Code Style and Formatting**
+1. Coding principles
+
+   - Follow clean code principles
+   - Apply SOLID principles
+   - Maximum method complexity: 5
+   - Maximum method length: 25 lines
+   - Use meaningful variable and method names
+
+2. **Code Style and Formatting**
 
    - Code is automatically formatted using Prettier
-   - Default Prettier rules are enforced:
-     - Print width: 100 characters
-     - Tab width: 2 spaces
-     - No tabs (use spaces)
-     - Single quotes
-     - Trailing commas
-   - Additional requirements:
-     - Follow clean code principles
-     - Apply SOLID principles
-     - Maximum method complexity: 5
-     - Maximum method length: 25 lines
-     - Use meaningful variable and method names
-     - Include JavaDoc for public APIs
 
    To format code:
 
@@ -145,14 +132,13 @@ The project uses Neo4j in two ways:
    npm run format:check
    ```
 
-2. **Testing**
+3. **Testing**
 
    - Follow TDD approach
-   - Write unit tests for all new code
-   - Include integration tests for Neo4j operations
-   - Maintain test coverage above 80%
+   - Focus on testing at the public contract level, rather than detailed unit tests
+   - Maintain test coverage above 90%
 
-3. **Git Workflow**
+4. **Git Workflow**
    - Create feature branches from main
    - Use meaningful commit messages
    - Include tests with all changes
@@ -162,19 +148,19 @@ The project uses Neo4j in two ways:
 
 1. **Code Documentation**
 
-   - Add JavaDoc to all public classes and methods
+   - Add useful class-level and method-level comments where it helps to explain intent
    - Include example usage where appropriate
    - Document complex algorithms and decisions
 
 2. **Project Documentation**
    - Update README.md for user-facing changes
    - Update CONTRIBUTING.md for development changes
-   - Keep technical design docs current
+   - Keep our high-level technical design document current
+   - If you are using an AI to help you code, refer to this document and .clinerules for general context
 
 ## Getting Help
 
 - Create an issue for bugs or feature requests
-- Ask questions in pull requests
 - Refer to the technical design document for architecture details
 
 ## License
