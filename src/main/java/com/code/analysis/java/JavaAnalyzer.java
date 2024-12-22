@@ -4,6 +4,8 @@ import com.code.analysis.core.CodeAnalyzer;
 import com.code.analysis.core.model.CodeUnit;
 import com.code.analysis.core.model.Definition;
 import com.code.analysis.core.model.Documentation;
+import com.code.analysis.java.converter.JavaConverter;
+import com.code.analysis.java.converter.DefaultJavaConverter;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
@@ -31,7 +33,7 @@ public class JavaAnalyzer implements CodeAnalyzer {
       .setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
 
     this.parser = new JavaParser(config);
-    this.converter = new JavaConverter();
+    this.converter = new DefaultJavaConverter();
   }
 
   public JavaAnalyzer() {
@@ -40,7 +42,7 @@ public class JavaAnalyzer implements CodeAnalyzer {
       .setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
 
     this.parser = new JavaParser(config);
-    this.converter = new JavaConverter();
+    this.converter = new DefaultJavaConverter();
   }
 
   @Override
