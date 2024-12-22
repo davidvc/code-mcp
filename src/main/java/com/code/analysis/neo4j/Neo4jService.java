@@ -6,6 +6,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for interacting with a Neo4j graph database to analyze code
+ * structure and metrics.
+ * 
+ * This service provides functionality to:
+ * - Query code structure information (components, files, classes, methods)
+ * - Retrieve code quality metrics (complexity, coupling, cohesion)
+ * - Analyze relationships between code elements
+ * 
+ * The service uses the Neo4j Java driver to execute Cypher queries and process
+ * results.
+ * All database operations are performed within a session scope to ensure proper
+ * resource
+ * management and transaction handling.
+ * 
+ * Example usage:
+ * 
+ * <pre>
+ * try (Neo4jService service = new Neo4jService(driver)) {
+ *     if (service.verifyConnection()) {
+ *         Map<String, Object> summary = service.getCodeSummary();
+ *         List<Map<String, Object>> metrics = service.getComplexityMetrics();
+ *     }
+ * }
+ * </pre>
+ */
 public class Neo4jService implements AutoCloseable {
     private final Driver driver;
 
