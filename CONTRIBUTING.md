@@ -135,6 +135,7 @@ The project uses Neo4j in two ways:
      - Include JavaDoc for public APIs
 
    To format code:
+
    ```bash
    # Format all files
    mvn initialize  # First time only, to set up node/npm

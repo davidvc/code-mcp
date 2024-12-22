@@ -167,20 +167,21 @@ flowchart TB
 
 ```java
 public interface CodeAnalyzer {
-    AST parseFile(Path path) throws IOException;
-    CodeMetrics extractMetrics(AST ast);
-    List<Relationship> extractRelationships(AST ast);
-    List<Documentation> extractDocumentation(AST ast);
+  AST parseFile(Path path) throws IOException;
+  CodeMetrics extractMetrics(AST ast);
+  List<Relationship> extractRelationships(AST ast);
+  List<Documentation> extractDocumentation(AST ast);
 }
 
 public interface CodeMetrics {
-    int getComplexity();
-    double getCohesion();
-    double getCoupling();
-    int getLineCount();
-    int getCommentCount();
-    // Additional metrics
+  int getComplexity();
+  double getCohesion();
+  double getCoupling();
+  int getLineCount();
+  int getCommentCount();
+  // Additional metrics
 }
+
 ```
 
 ### 3.2 Knowledge Graph Manager
@@ -189,12 +190,13 @@ public interface CodeMetrics {
 
 ```java
 public interface GraphManager {
-    Node addNode(NodeType type, Map<String, Object> properties);
-    Relationship addRelationship(Node from, Node to, RelationType type);
-    Node updateNode(Node node, Map<String, Object> properties);
-    void deleteNode(Node node);
-    QueryResult query(GraphQuery query);
+  Node addNode(NodeType type, Map<String, Object> properties);
+  Relationship addRelationship(Node from, Node to, RelationType type);
+  Node updateNode(Node node, Map<String, Object> properties);
+  void deleteNode(Node node);
+  QueryResult query(GraphQuery query);
 }
+
 ```
 
 ### 3.3 Query Engine
@@ -203,18 +205,19 @@ public interface GraphManager {
 
 ```java
 public interface QueryEngine {
-    StructuredQuery parseNaturalLanguage(String query);
-    QueryResult executeQuery(StructuredQuery query);
-    FormattedResponse formatResponse(QueryResult result);
+  StructuredQuery parseNaturalLanguage(String query);
+  QueryResult executeQuery(StructuredQuery query);
+  FormattedResponse formatResponse(QueryResult result);
 }
 
 public enum QueryType {
-    SUMMARY,
-    ARCHITECTURE,
-    COMPONENT,
-    QUALITY,
-    RELATIONSHIP
+  SUMMARY,
+  ARCHITECTURE,
+  COMPONENT,
+  QUALITY,
+  RELATIONSHIP,
 }
+
 ```
 
 ## 4. API Specifications
@@ -223,61 +226,55 @@ public enum QueryType {
 
 ```java
 public interface MCPTools {
-    public record AnalyzeInput(
-        String path,
-        Optional<List<String>> languages,
-        Optional<List<String>> excludePaths
-    ) {}
+  public record AnalyzeInput(
+    String path,
+    Optional<List<String>> languages,
+    Optional<List<String>> excludePaths
+  ) {}
 
-    public record AnalyzeOutput(
-        Status status,
-        Optional<CodebaseMetrics> metrics,
-        Optional<String> error
-    ) {}
+  public record AnalyzeOutput(
+    Status status,
+    Optional<CodebaseMetrics> metrics,
+    Optional<String> error
+  ) {}
 
-    public record QueryInput(
-        String query,
-        Optional<QueryContext> context
-    ) {}
+  public record QueryInput(String query, Optional<QueryContext> context) {}
 
-    public record QueryOutput(
-        QueryResult result,
-        double confidence
-    ) {}
+  public record QueryOutput(QueryResult result, double confidence) {}
 
-    public record MetricsInput(
-        Optional<String> path,
-        Optional<EntityType> type
-    ) {}
+  public record MetricsInput(Optional<String> path, Optional<EntityType> type) {}
 
-    public record MetricsOutput(
-        List<Metrics> metrics
-    ) {}
+  public record MetricsOutput(List<Metrics> metrics) {}
 
-    AnalyzeOutput analyzeCodebase(AnalyzeInput input);
-    QueryOutput query(QueryInput input);
-    MetricsOutput getMetrics(MetricsInput input);
+  AnalyzeOutput analyzeCodebase(AnalyzeInput input);
+  QueryOutput query(QueryInput input);
+  MetricsOutput getMetrics(MetricsInput input);
 }
 
 public enum Status {
-    SUCCESS, ERROR
+  SUCCESS,
+  ERROR,
 }
 
 public enum EntityType {
-    FILE, CLASS, METHOD
+  FILE,
+  CLASS,
+  METHOD,
 }
+
 ```
 
 ### 5.2 MCP Resources
 
 ```java
 public interface MCPResources {
-    public record Resource(String uri, String type) {}
+  public record Resource(String uri, String type) {}
 
-    Resource CODEBASE = new Resource("codebase://summary", "json");
-    Resource METRICS = new Resource("codebase://metrics/{path}", "json");
-    Resource DOCUMENTATION = new Resource("codebase://docs/{path}", "markdown");
+  Resource CODEBASE = new Resource("codebase://summary", "json");
+  Resource METRICS = new Resource("codebase://metrics/{path}", "json");
+  Resource DOCUMENTATION = new Resource("codebase://docs/{path}", "markdown");
 }
+
 ```
 
 ## 6. Performance Considerations
@@ -387,23 +384,26 @@ public interface MCPResources {
 ```java
 @Test
 class CodeAnalyzerTest {
-    @Test
-    void shouldParseJavaFilesCorrectly() throws IOException {
-        CodeAnalyzer analyzer = new CodeAnalyzer();
-        AST ast = analyzer.parseFile(Path.of("Example.java"));
-        assertThat(ast).hasValidStructure();
-    }
+
+  @Test
+  void shouldParseJavaFilesCorrectly() throws IOException {
+    CodeAnalyzer analyzer = new CodeAnalyzer();
+    AST ast = analyzer.parseFile(Path.of("Example.java"));
+    assertThat(ast).hasValidStructure();
+  }
 }
 
 @Test
 class QueryEngineTest {
-    @Test
-    void shouldHandleNaturalLanguageQueries() {
-        QueryEngine engine = new QueryEngine();
-        QueryResult result = engine.query("Show me all classes with high complexity");
-        assertThat(result).containsComplexityMetrics();
-    }
+
+  @Test
+  void shouldHandleNaturalLanguageQueries() {
+    QueryEngine engine = new QueryEngine();
+    QueryResult result = engine.query("Show me all classes with high complexity");
+    assertThat(result).containsComplexityMetrics();
+  }
 }
+
 ```
 
 ## 10. Deployment Considerations

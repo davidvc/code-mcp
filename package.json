@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "format": "prettier --write \"**/*.{java,json,md}\"",
-    "format:check": "prettier --check \"**/*.{java,json,md}\""
+    "format": "prettier --write \"**/*.{java,json,md}\" --plugin=prettier-plugin-java",
+    "format:check": "prettier --check \"**/*.{java,json,md}\" --plugin=prettier-plugin-java"
   },
   "devDependencies": {
     "prettier": "^3.1.1",
