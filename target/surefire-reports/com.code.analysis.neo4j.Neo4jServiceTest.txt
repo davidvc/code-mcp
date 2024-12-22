@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.code.analysis.neo4j.Neo4jServiceTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.981 s -- in com.code.analysis.neo4j.Neo4jServiceTest
