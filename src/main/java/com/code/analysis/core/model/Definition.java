@@ -29,25 +29,4 @@ public record Definition(
       new HashMap<>(metadata != null ? metadata : Collections.emptyMap())
     );
   }
-
-  public static class DefinitionBuilder {
-
-    private List<Reference> references = new ArrayList<>();
-    private Map<String, Object> metadata = new HashMap<>();
-
-    public DefinitionBuilder addReference(Reference reference) {
-      this.references.add(reference);
-      return this;
-    }
-
-    public DefinitionBuilder addReferences(List<Reference> references) {
-      this.references.addAll(references);
-      return this;
-    }
-
-    public DefinitionBuilder addMetadata(String key, Object value) {
-      this.metadata.put(key, value);
-      return this;
-    }
-  }
 }

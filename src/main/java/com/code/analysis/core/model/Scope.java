@@ -27,25 +27,4 @@ public record Scope(
       new HashMap<>(metadata != null ? metadata : Collections.emptyMap())
     );
   }
-
-  public static class ScopeBuilder {
-
-    private List<Scope> children = new ArrayList<>();
-    private Map<String, Object> metadata = new HashMap<>();
-
-    public ScopeBuilder addChild(Scope child) {
-      this.children.add(child);
-      return this;
-    }
-
-    public ScopeBuilder addChildren(List<Scope> children) {
-      this.children.addAll(children);
-      return this;
-    }
-
-    public ScopeBuilder addMetadata(String key, Object value) {
-      this.metadata.put(key, value);
-      return this;
-    }
-  }
 }

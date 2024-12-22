@@ -18,7 +18,9 @@ import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -26,8 +28,7 @@ import java.util.stream.Collectors;
 /**
  * Converts Java source code into language-agnostic model classes.
  * This converter uses JavaParser to parse Java source files and converts the
- * AST
- * into our generic code analysis model.
+ * AST into our generic code analysis model.
  *
  * <p>
  * The converter handles:
@@ -99,19 +100,22 @@ class JavaConverter {
         .findFirst()
         .orElse(null);
 
+      Map<String, Object> metadata = new HashMap<>();
+      metadata.put(
+        "packageName",
+        cu.getPackageDeclaration().map(pkg -> pkg.getNameAsString()).orElse("")
+      );
+      metadata.put(
+        "imports",
+        cu.getImports().stream().map(imp -> imp.getNameAsString()).collect(Collectors.toList())
+      );
+
       return CodeUnit.builder()
         .id(UUID.randomUUID().toString())
         .name(cu.getStorage().map(storage -> storage.getFileName()).orElse("unknown"))
         .type(UnitType.FILE)
-        .addMetadata(
-          "packageName",
-          cu.getPackageDeclaration().map(pkg -> pkg.getNameAsString()).orElse("")
-        )
-        .addMetadata(
-          "imports",
-          cu.getImports().stream().map(imp -> imp.getNameAsString()).collect(Collectors.toList())
-        )
-        .addDefinitions(definitions)
+        .metadata(metadata)
+        .definitions(definitions)
         .documentation(documentation)
         .build();
     } catch (Exception e) {
@@ -152,30 +156,33 @@ class JavaConverter {
       ConversionUtils.validateNotNull(decl, "Class declaration");
       var scope = createScopeFromNode(decl, decl.isPublic());
 
+      Map<String, Object> metadata = new HashMap<>();
+      metadata.put("isAbstract", decl.isAbstract());
+      metadata.put(
+        "superclass",
+        decl
+          .getExtendedTypes()
+          .stream()
+          .map(type -> type.getNameAsString())
+          .findFirst()
+          .orElse(null)
+      );
+      metadata.put(
+        "interfaces",
+        decl
+          .getImplementedTypes()
+          .stream()
+          .map(type -> type.getNameAsString())
+          .collect(Collectors.toList())
+      );
+
       return Definition.builder()
         .id(UUID.randomUUID().toString())
         .name(decl.getNameAsString())
         .kind(DefinitionKind.TYPE)
         .scope(scope)
         .position(createPositionFromNode(decl))
-        .addMetadata("isAbstract", decl.isAbstract())
-        .addMetadata(
-          "superclass",
-          decl
-            .getExtendedTypes()
-            .stream()
-            .map(type -> type.getNameAsString())
-            .findFirst()
-            .orElse(null)
-        )
-        .addMetadata(
-          "interfaces",
-          decl
-            .getImplementedTypes()
-            .stream()
-            .map(type -> type.getNameAsString())
-            .collect(Collectors.toList())
-        )
+        .metadata(metadata)
         .build();
     }
 
@@ -183,20 +190,23 @@ class JavaConverter {
       ConversionUtils.validateNotNull(decl, "Interface declaration");
       var scope = createScopeFromNode(decl, decl.isPublic());
 
+      Map<String, Object> metadata = new HashMap<>();
+      metadata.put(
+        "superInterfaces",
+        decl
+          .getExtendedTypes()
+          .stream()
+          .map(type -> type.getNameAsString())
+          .collect(Collectors.toList())
+      );
+
       return Definition.builder()
         .id(UUID.randomUUID().toString())
         .name(decl.getNameAsString())
         .kind(DefinitionKind.INTERFACE)
         .scope(scope)
         .position(createPositionFromNode(decl))
-        .addMetadata(
-          "superInterfaces",
-          decl
-            .getExtendedTypes()
-            .stream()
-            .map(type -> type.getNameAsString())
-            .collect(Collectors.toList())
-        )
+        .metadata(metadata)
         .build();
     }
 
@@ -204,20 +214,23 @@ class JavaConverter {
       ConversionUtils.validateNotNull(decl, "Enum declaration");
       var scope = createScopeFromNode(decl, decl.isPublic());
 
+      Map<String, Object> metadata = new HashMap<>();
+      metadata.put(
+        "constants",
+        decl
+          .getEntries()
+          .stream()
+          .map(entry -> entry.getNameAsString())
+          .collect(Collectors.toList())
+      );
+
       return Definition.builder()
         .id(UUID.randomUUID().toString())
         .name(decl.getNameAsString())
         .kind(DefinitionKind.ENUM)
         .scope(scope)
         .position(createPositionFromNode(decl))
-        .addMetadata(
-          "constants",
-          decl
-            .getEntries()
-            .stream()
-            .map(entry -> entry.getNameAsString())
-            .collect(Collectors.toList())
-        )
+        .metadata(metadata)
         .build();
     }
   }
@@ -231,17 +244,20 @@ class JavaConverter {
       ConversionUtils.validateNotNull(decl, "Method declaration");
       var scope = createScopeFromNode(decl, decl.isPublic());
 
+      Map<String, Object> metadata = new HashMap<>();
+      metadata.put("returnType", decl.getType().asString());
+      metadata.put(
+        "parameters",
+        decl.getParameters().stream().map(p -> p.getNameAsString()).collect(Collectors.toList())
+      );
+
       return Definition.builder()
         .id(UUID.randomUUID().toString())
         .name(decl.getNameAsString())
         .kind(DefinitionKind.FUNCTION)
         .scope(scope)
         .position(createPositionFromNode(decl))
-        .addMetadata("returnType", decl.getType().asString())
-        .addMetadata(
-          "parameters",
-          decl.getParameters().stream().map(p -> p.getNameAsString()).collect(Collectors.toList())
-        )
+        .metadata(metadata)
         .build();
     }
 
@@ -249,17 +265,20 @@ class JavaConverter {
       ConversionUtils.validateNotNull(decl, "Constructor declaration");
       var scope = createScopeFromNode(decl, decl.isPublic());
 
+      Map<String, Object> metadata = new HashMap<>();
+      metadata.put("isConstructor", true);
+      metadata.put(
+        "parameters",
+        decl.getParameters().stream().map(p -> p.getNameAsString()).collect(Collectors.toList())
+      );
+
       return Definition.builder()
         .id(UUID.randomUUID().toString())
         .name(decl.getNameAsString())
         .kind(DefinitionKind.FUNCTION)
         .scope(scope)
         .position(createPositionFromNode(decl))
-        .addMetadata("isConstructor", true)
-        .addMetadata(
-          "parameters",
-          decl.getParameters().stream().map(p -> p.getNameAsString()).collect(Collectors.toList())
-        )
+        .metadata(metadata)
         .build();
     }
   }

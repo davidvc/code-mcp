@@ -16,14 +16,4 @@ public record DocumentationTag(String id, String name, String value, Map<String,
       new HashMap<>(metadata != null ? metadata : Collections.emptyMap())
     );
   }
-
-  public static class DocumentationTagBuilder {
-
-    private Map<String, Object> metadata = new HashMap<>();
-
-    public DocumentationTagBuilder addMetadata(String key, Object value) {
-      this.metadata.put(key, value);
-      return this;
-    }
-  }
 }

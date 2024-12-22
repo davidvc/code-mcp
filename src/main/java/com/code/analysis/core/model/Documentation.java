@@ -28,25 +28,4 @@ public record Documentation(
       new HashMap<>(metadata != null ? metadata : Collections.emptyMap())
     );
   }
-
-  public static class DocumentationBuilder {
-
-    private List<DocumentationTag> tags = new ArrayList<>();
-    private Map<String, Object> metadata = new HashMap<>();
-
-    public DocumentationBuilder addTag(DocumentationTag tag) {
-      this.tags.add(tag);
-      return this;
-    }
-
-    public DocumentationBuilder addTags(List<DocumentationTag> tags) {
-      this.tags.addAll(tags);
-      return this;
-    }
-
-    public DocumentationBuilder addMetadata(String key, Object value) {
-      this.metadata.put(key, value);
-      return this;
-    }
-  }
 }

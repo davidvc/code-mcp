@@ -32,36 +32,4 @@ public record CodeUnit(
       new HashMap<>(metadata != null ? metadata : Collections.emptyMap())
     );
   }
-
-  public static class CodeUnitBuilder {
-
-    private List<Definition> definitions = new ArrayList<>();
-    private List<CodeUnit> dependencies = new ArrayList<>();
-    private Map<String, Object> metadata = new HashMap<>();
-
-    public CodeUnitBuilder addDefinition(Definition definition) {
-      this.definitions.add(definition);
-      return this;
-    }
-
-    public CodeUnitBuilder addDefinitions(List<Definition> definitions) {
-      this.definitions.addAll(definitions);
-      return this;
-    }
-
-    public CodeUnitBuilder addDependency(CodeUnit dependency) {
-      this.dependencies.add(dependency);
-      return this;
-    }
-
-    public CodeUnitBuilder addDependencies(List<CodeUnit> dependencies) {
-      this.dependencies.addAll(dependencies);
-      return this;
-    }
-
-    public CodeUnitBuilder addMetadata(String key, Object value) {
-      this.metadata.put(key, value);
-      return this;
-    }
-  }
 }

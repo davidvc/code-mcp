@@ -22,14 +22,4 @@ public record Reference(
       new HashMap<>(metadata != null ? metadata : Collections.emptyMap())
     );
   }
-
-  public static class ReferenceBuilder {
-
-    private Map<String, Object> metadata = new HashMap<>();
-
-    public ReferenceBuilder addMetadata(String key, Object value) {
-      this.metadata.put(key, value);
-      return this;
-    }
-  }
 }
