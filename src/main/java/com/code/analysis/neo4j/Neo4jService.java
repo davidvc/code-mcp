@@ -39,6 +39,11 @@ public class Neo4jService implements AutoCloseable {
         this.driver = driver;
     }
 
+    /**
+     * Verifies the connection to the Neo4j database by executing a simple query.
+     *
+     * @return true if the connection is successful, false otherwise
+     */
     public boolean verifyConnection() {
         try (Session session = driver.session()) {
             session.run("RETURN 1");
@@ -48,6 +53,16 @@ public class Neo4jService implements AutoCloseable {
         }
     }
 
+    /**
+     * Retrieves a summary of the codebase structure including counts of components,
+     * files, classes, and methods.
+     *
+     * @return A map containing counts of different code elements:
+     *         - components: number of distinct components
+     *         - files: number of source files
+     *         - classes: number of classes
+     *         - methods: number of methods
+     */
     public Map<String, Object> getCodeSummary() {
         try (Session session = driver.session()) {
             Result result = session.run("""
@@ -65,6 +80,15 @@ public class Neo4jService implements AutoCloseable {
         }
     }
 
+    /**
+     * Retrieves detailed information about all components in the codebase.
+     * For each component, includes:
+     * - Name
+     * - Cohesion and coupling metrics
+     * - Count of contained files and classes
+     *
+     * @return List of component details as maps
+     */
     public List<Map<String, Object>> getComponentDetails() {
         try (Session session = driver.session()) {
             Result result = session.run("""
@@ -86,6 +110,13 @@ public class Neo4jService implements AutoCloseable {
         }
     }
 
+    /**
+     * Retrieves complexity metrics for methods in the codebase.
+     * Returns the top 10 most complex methods, ordered by complexity.
+     *
+     * @return List of method complexity details, including method signature and
+     *         complexity score
+     */
     public List<Map<String, Object>> getComplexityMetrics() {
         try (Session session = driver.session()) {
             Result result = session.run("""
