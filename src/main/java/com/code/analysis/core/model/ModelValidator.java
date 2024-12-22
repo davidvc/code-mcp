@@ -1,45 +1,12 @@
-package com.code.analysis.core;
-
-import com.code.analysis.core.model.Position;
-import java.util.Optional;
-import java.util.function.Supplier;
+package com.code.analysis.core.model;
 
 /**
- * Utility class for common code conversion operations.
- * Provides helper methods for error handling and creating common model objects.
+ * Provides validation methods for model classes.
  */
-public final class ConversionUtils {
+public final class ModelValidator {
 
-  private ConversionUtils() {
+  private ModelValidator() {
     // Prevent instantiation
-  }
-
-  /**
-   * Safely executes a conversion operation with error handling.
-   *
-   * @param operation    The operation to execute
-   * @param errorMessage Message to include in exception if operation fails
-   * @param <T>          The type of result
-   * @return The result of the operation
-   * @throws IllegalStateException if the operation fails
-   */
-  public static <T> T safeExecute(Supplier<Optional<T>> operation, String errorMessage) {
-    try {
-      return operation.get().orElseThrow(() -> new IllegalStateException(errorMessage));
-    } catch (Exception e) {
-      throw new IllegalStateException(errorMessage + ": " + e.getMessage(), e);
-    }
-  }
-
-  /**
-   * Creates a Position object from line and column numbers.
-   *
-   * @param line   The line number
-   * @param column The column number
-   * @return A new Position object
-   */
-  public static Position createPosition(int line, int column) {
-    return Position.builder().line(line).column(column).build();
   }
 
   /**

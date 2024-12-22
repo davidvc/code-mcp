@@ -1,6 +1,6 @@
 package com.code.analysis.java;
 
-import com.code.analysis.core.ConversionUtils;
+import com.code.analysis.core.model.ModelValidator;
 import com.code.analysis.core.model.CodeUnit;
 import com.code.analysis.core.model.Definition;
 import com.code.analysis.core.model.DefinitionKind;
@@ -63,7 +63,7 @@ class JavaConverter {
    * @throws IllegalStateException    if conversion fails
    */
   CodeUnit convert(CompilationUnit cu) {
-    ConversionUtils.validateNotNull(cu, "CompilationUnit");
+    ModelValidator.validateNotNull(cu, "CompilationUnit");
 
     try {
       var definitions = new ArrayList<Definition>();
@@ -132,8 +132,8 @@ class JavaConverter {
 
     return Scope.builder()
       .level(isPublic ? ScopeLevel.GLOBAL : ScopeLevel.PACKAGE)
-      .start(ConversionUtils.createPosition(begin.line, begin.column))
-      .end(ConversionUtils.createPosition(end.line, end.column))
+      .start(Position.builder().line(begin.line).column(begin.column).build())
+      .end(Position.builder().line(end.line).column(end.column).build())
       .build();
   }
 
@@ -142,7 +142,7 @@ class JavaConverter {
    */
   private static Position createPositionFromNode(Node node) {
     var begin = node.getBegin().orElseThrow();
-    return ConversionUtils.createPosition(begin.line, begin.column);
+    return Position.builder().line(begin.line).column(begin.column).build();
   }
 
   /**
@@ -151,7 +151,7 @@ class JavaConverter {
   private static class ClassConverter {
 
     Definition convertClass(ClassOrInterfaceDeclaration decl) {
-      ConversionUtils.validateNotNull(decl, "Class declaration");
+      ModelValidator.validateNotNull(decl, "Class declaration");
       var scope = createScopeFromNode(decl, decl.isPublic());
 
       Map<String, Object> metadata = new HashMap<>();
@@ -185,7 +185,7 @@ class JavaConverter {
     }
 
     Definition convertInterface(ClassOrInterfaceDeclaration decl) {
-      ConversionUtils.validateNotNull(decl, "Interface declaration");
+      ModelValidator.validateNotNull(decl, "Interface declaration");
       var scope = createScopeFromNode(decl, decl.isPublic());
 
       Map<String, Object> metadata = new HashMap<>();
@@ -209,7 +209,7 @@ class JavaConverter {
     }
 
     Definition convertEnum(EnumDeclaration decl) {
-      ConversionUtils.validateNotNull(decl, "Enum declaration");
+      ModelValidator.validateNotNull(decl, "Enum declaration");
       var scope = createScopeFromNode(decl, decl.isPublic());
 
       Map<String, Object> metadata = new HashMap<>();
@@ -239,7 +239,7 @@ class JavaConverter {
   private static class MethodConverter {
 
     Definition convertMethod(MethodDeclaration decl) {
-      ConversionUtils.validateNotNull(decl, "Method declaration");
+      ModelValidator.validateNotNull(decl, "Method declaration");
       var scope = createScopeFromNode(decl, decl.isPublic());
 
       Map<String, Object> metadata = new HashMap<>();
@@ -260,7 +260,7 @@ class JavaConverter {
     }
 
     Definition convertConstructor(ConstructorDeclaration decl) {
-      ConversionUtils.validateNotNull(decl, "Constructor declaration");
+      ModelValidator.validateNotNull(decl, "Constructor declaration");
       var scope = createScopeFromNode(decl, decl.isPublic());
 
       Map<String, Object> metadata = new HashMap<>();
@@ -287,7 +287,7 @@ class JavaConverter {
   private static class DocumentationConverter {
 
     Documentation convertJavadoc(JavadocComment comment) {
-      ConversionUtils.validateNotNull(comment, "Javadoc comment");
+      ModelValidator.validateNotNull(comment, "Javadoc comment");
       var begin = comment.getBegin().orElseThrow();
       var javadoc = comment.parse();
 
@@ -295,7 +295,7 @@ class JavaConverter {
         .id(UUID.randomUUID().toString())
         .description(javadoc.getDescription().toText())
         .format(DocumentationFormat.JAVADOC)
-        .position(ConversionUtils.createPosition(begin.line, begin.column))
+        .position(Position.builder().line(begin.line).column(begin.column).build())
         .build();
     }
   }

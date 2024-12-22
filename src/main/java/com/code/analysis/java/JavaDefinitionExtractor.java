@@ -10,7 +10,9 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 class JavaDefinitionExtractor {
@@ -39,22 +41,25 @@ class JavaDefinitionExtractor {
       .end(Position.builder().line(end.line).column(end.column).build())
       .build();
 
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put("isAbstract", classDecl.isAbstract());
+    metadata.put(
+      "superclass",
+      classDecl
+        .getExtendedTypes()
+        .stream()
+        .map(type -> type.getNameAsString())
+        .findFirst()
+        .orElse(null)
+    );
+
     return Definition.builder()
       .id(UUID.randomUUID().toString())
       .name(classDecl.getNameAsString())
       .kind(classDecl.isInterface() ? DefinitionKind.INTERFACE : DefinitionKind.TYPE)
       .scope(scope)
       .position(Position.builder().line(begin.line).column(begin.column).build())
-      .addMetadata("isAbstract", classDecl.isAbstract())
-      .addMetadata(
-        "superclass",
-        classDecl
-          .getExtendedTypes()
-          .stream()
-          .map(type -> type.getNameAsString())
-          .findFirst()
-          .orElse(null)
-      )
+      .metadata(metadata)
       .build();
   }
 
@@ -72,14 +77,17 @@ class JavaDefinitionExtractor {
       .end(Position.builder().line(end.line).column(end.column).build())
       .build();
 
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put("returnType", methodDecl.getTypeAsString());
+    metadata.put("isStatic", methodDecl.isStatic());
+
     return Definition.builder()
       .id(UUID.randomUUID().toString())
       .name(methodDecl.getNameAsString())
       .kind(DefinitionKind.FUNCTION)
       .scope(scope)
       .position(Position.builder().line(begin.line).column(begin.column).build())
-      .addMetadata("returnType", methodDecl.getTypeAsString())
-      .addMetadata("isStatic", methodDecl.isStatic())
+      .metadata(metadata)
       .build();
   }
 
@@ -97,15 +105,18 @@ class JavaDefinitionExtractor {
       .end(Position.builder().line(end.line).column(end.column).build())
       .build();
 
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put("type", fieldDecl.getElementType().asString());
+    metadata.put("isStatic", fieldDecl.isStatic());
+    metadata.put("isFinal", fieldDecl.isFinal());
+
     return Definition.builder()
       .id(UUID.randomUUID().toString())
       .name(fieldDecl.getVariables().get(0).getNameAsString())
       .kind(DefinitionKind.VARIABLE)
       .scope(scope)
       .position(Position.builder().line(begin.line).column(begin.column).build())
-      .addMetadata("type", fieldDecl.getElementType().asString())
-      .addMetadata("isStatic", fieldDecl.isStatic())
-      .addMetadata("isFinal", fieldDecl.isFinal())
+      .metadata(metadata)
       .build();
   }
 }

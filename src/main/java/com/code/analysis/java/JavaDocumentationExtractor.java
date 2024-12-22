@@ -9,8 +9,11 @@ import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.JavadocBlockTag;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Extracts documentation from Java source files.
@@ -41,26 +44,26 @@ class JavaDocumentationExtractor {
 
   private Documentation convertJavadoc(Javadoc javadoc, JavadocComment comment) {
     var begin = comment.getBegin().orElseThrow();
+    var tags = javadoc.getBlockTags().stream().map(this::convertBlockTag).collect(Collectors.toList());
 
-    var builder = Documentation.builder()
+    return Documentation.builder()
       .id(UUID.randomUUID().toString())
       .description(javadoc.getDescription().toText())
       .format(DocumentationFormat.JAVADOC)
-      .position(Position.builder().line(begin.line).column(begin.column).build());
-
-    javadoc.getBlockTags().forEach(tag -> builder.addTag(convertBlockTag(tag)));
-
-    return builder.build();
+      .position(Position.builder().line(begin.line).column(begin.column).build())
+      .tags(tags)
+      .build();
   }
 
   private DocumentationTag convertBlockTag(JavadocBlockTag tag) {
-    var builder = DocumentationTag.builder()
+    Map<String, Object> metadata = new HashMap<>();
+    tag.getName().ifPresent(name -> metadata.put("name", name));
+
+    return DocumentationTag.builder()
       .id(UUID.randomUUID().toString())
       .name(tag.getTagName())
-      .value(tag.getContent().toText());
-
-    tag.getName().ifPresent(name -> builder.addMetadata("name", name));
-
-    return builder.build();
+      .value(tag.getContent().toText())
+      .metadata(metadata)
+      .build();
   }
 }
