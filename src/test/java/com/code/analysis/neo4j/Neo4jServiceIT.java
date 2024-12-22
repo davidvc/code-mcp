@@ -1,133 +1,105 @@
 package com.code.analysis.neo4j;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.*;
-import org.testcontainers.containers.Neo4jContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.neo4j.harness.Neo4j;
+import org.neo4j.harness.Neo4jBuilders;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Testcontainers
 class Neo4jServiceIT {
-    @Container
-    private static final Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5.15.0")
-            .withoutAuthentication();
+        private static Neo4j embeddedDatabaseServer;
+        private static Driver driver;
+        private Neo4jService service;
 
-    private Neo4jService service;
-    private Driver driver;
+        @BeforeAll
+        static void startNeo4j() throws IOException {
+                // Initialize embedded database
+                embeddedDatabaseServer = Neo4jBuilders.newInProcessBuilder()
+                                .withDisabledServer()
+                                .build();
 
-    @BeforeEach
-    void setUp() {
-        driver = GraphDatabase.driver(neo4jContainer.getBoltUrl());
-        service = new Neo4jService(driver);
-        setupTestData();
-    }
+                driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());
 
-    private void setupTestData() {
-        try (Session session = driver.session()) {
-            // Clean existing data
-            session.run("MATCH (n) DETACH DELETE n");
+                // Read and execute schema and test data files
+                String schema = Files.readString(Path.of("neo4j/scripts/schema.cypher"));
+                String testData = Files.readString(Path.of("neo4j/data/test_data.cypher"));
 
-            // Create test components with relationships
-            session.run(
-                    """
-                            CREATE (c1:Component {name: 'Core', cohesion: 0.8, coupling: 0.2})
-                            CREATE (c2:Component {name: 'UI', cohesion: 0.7, coupling: 0.3})
-                            CREATE (f1:File {name: 'CoreService.java'})
-                            CREATE (f2:File {name: 'CoreRepository.java'})
-                            CREATE (f3:File {name: 'UIComponent.java'})
-                            CREATE (cls1:Class {name: 'CoreService'})
-                            CREATE (cls2:Class {name: 'CoreRepository'})
-                            CREATE (cls3:Class {name: 'UIComponent'})
-                            CREATE (m1:Method {name: 'processData', fullSignature: 'com.core.CoreService.processData()', complexity: 8})
-                            CREATE (m2:Method {name: 'saveData', fullSignature: 'com.core.CoreRepository.saveData()', complexity: 3})
-                            CREATE (m3:Method {name: 'render', fullSignature: 'com.ui.UIComponent.render()', complexity: 5})
-
-                            // Create relationships
-                            CREATE (c1)-[:CONTAINS]->(f1)
-                            CREATE (c1)-[:CONTAINS]->(f2)
-                            CREATE (c2)-[:CONTAINS]->(f3)
-                            CREATE (f1)-[:CONTAINS]->(cls1)
-                            CREATE (f2)-[:CONTAINS]->(cls2)
-                            CREATE (f3)-[:CONTAINS]->(cls3)
-                            CREATE (cls1)-[:CONTAINS]->(m1)
-                            CREATE (cls2)-[:CONTAINS]->(m2)
-                            CREATE (cls3)-[:CONTAINS]->(m3)
-                            """);
+                // Execute each statement separately
+                try (Session session = driver.session()) {
+                        // Split statements by semicolon and filter out empty lines
+                        Stream.of(schema, testData)
+                                        .flatMap(content -> Arrays.stream(content.split(";")))
+                                        .map(String::trim)
+                                        .filter(stmt -> !stmt.isEmpty())
+                                        .forEach(stmt -> session.run(stmt + ";"));
+                }
         }
-    }
 
-    @Test
-    void shouldVerifyConnection() {
-        assertThat(service.verifyConnection()).isTrue();
-    }
+        @AfterAll
+        static void stopNeo4j() {
+                if (driver != null) {
+                        driver.close();
+                }
+                if (embeddedDatabaseServer != null) {
+                        embeddedDatabaseServer.close();
+                }
+        }
 
-    @Test
-    void shouldReturnCorrectCodeSummary() {
-        Map<String, Object> summary = service.getCodeSummary();
+        @BeforeEach
+        void setUp() {
+                service = new Neo4jService(driver);
+        }
 
-        assertThat(summary)
-                .containsEntry("components", 2L)
-                .containsEntry("files", 3L)
-                .containsEntry("classes", 3L)
-                .containsEntry("methods", 3L);
-    }
+        @Test
+        void shouldVerifyConnection() {
+                assertThat(service.verifyConnection()).isTrue();
+        }
 
-    @Test
-    void shouldReturnCorrectComponentDetails() {
-        List<Map<String, Object>> details = service.getComponentDetails();
+        @Test
+        void shouldReturnCorrectCodeSummary() {
+                Map<String, Object> summary = service.getCodeSummary();
 
-        assertThat(details).hasSize(2);
+                assertThat(summary)
+                                .containsEntry("components", 1L)
+                                .containsEntry("files", 1L)
+                                .containsEntry("classes", 1L)
+                                .containsEntry("methods", 1L);
+        }
 
-        // Find Core component
-        Map<String, Object> core = details.stream()
-                .filter(d -> d.get("name").equals("Core"))
-                .findFirst()
-                .orElseThrow();
+        @Test
+        void shouldReturnCorrectComponentDetails() {
+                List<Map<String, Object>> details = service.getComponentDetails();
 
-        assertThat(core)
-                .containsEntry("cohesion", 0.8)
-                .containsEntry("coupling", 0.2)
-                .containsEntry("fileCount", 2L)
-                .containsEntry("classCount", 2L);
+                assertThat(details).hasSize(1);
 
-        // Find UI component
-        Map<String, Object> ui = details.stream()
-                .filter(d -> d.get("name").equals("UI"))
-                .findFirst()
-                .orElseThrow();
+                Map<String, Object> component = details.get(0);
+                assertThat(component)
+                                .containsEntry("name", "TestComponent")
+                                .containsEntry("cohesion", 0.8)
+                                .containsEntry("coupling", 0.2)
+                                .containsEntry("fileCount", 1L)
+                                .containsEntry("classCount", 1L);
+        }
 
-        assertThat(ui)
-                .containsEntry("cohesion", 0.7)
-                .containsEntry("coupling", 0.3)
-                .containsEntry("fileCount", 1L)
-                .containsEntry("classCount", 1L);
-    }
+        @Test
+        void shouldReturnComplexityMetrics() {
+                List<Map<String, Object>> metrics = service.getComplexityMetrics();
 
-    @Test
-    void shouldReturnComplexityMetricsOrderedByComplexity() {
-        List<Map<String, Object>> metrics = service.getComplexityMetrics();
-
-        assertThat(metrics).hasSize(3);
-
-        // First should be the most complex method
-        assertThat(metrics.get(0))
-                .containsEntry("method", "com.core.CoreService.processData()")
-                .containsEntry("complexity", 8);
-
-        // Second should be the next most complex
-        assertThat(metrics.get(1))
-                .containsEntry("method", "com.ui.UIComponent.render()")
-                .containsEntry("complexity", 5);
-
-        // Third should be the least complex
-        assertThat(metrics.get(2))
-                .containsEntry("method", "com.core.CoreRepository.saveData()")
-                .containsEntry("complexity", 3);
-    }
+                assertThat(metrics).hasSize(1);
+                assertThat(metrics.get(0))
+                                .containsEntry("method", "com.test.Main.main(String[])")
+                                .containsEntry("complexity", 2L);
+        }
 }

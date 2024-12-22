@@ -13,3 +13,18 @@ include:
 
 I would like to create an MCP plugin that Cline can use which allows Cline to easily ask questions about
 the codebase. This plugin could also be used by Claude Desktop so the developer can ask questions directly.
+
+## System Requirements
+
+- Java 21 or higher (required for modern language features and optimal performance)
+- Neo4j 5.18.0 or higher
+- Maven 3.9 or higher
+
+The project specifically requires Java 21 for:
+
+- Enhanced pattern matching
+- Record patterns
+- String templates
+- Virtual threads
+- Structured concurrency
+- Other modern Java features that improve code quality and maintainability
