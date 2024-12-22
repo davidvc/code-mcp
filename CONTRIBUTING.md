@@ -117,14 +117,32 @@ The project uses Neo4j in two ways:
 
 ## Code Style and Guidelines
 
-1. **Java Code Style**
+1. **Code Style and Formatting**
 
-   - Follow clean code principles
-   - Apply SOLID principles
-   - Maximum method complexity: 5
-   - Maximum method length: 25 lines
-   - Use meaningful variable and method names
-   - Include JavaDoc for public APIs
+   - Code is automatically formatted using Prettier
+   - Default Prettier rules are enforced:
+     - Print width: 100 characters
+     - Tab width: 2 spaces
+     - No tabs (use spaces)
+     - Single quotes
+     - Trailing commas
+   - Additional requirements:
+     - Follow clean code principles
+     - Apply SOLID principles
+     - Maximum method complexity: 5
+     - Maximum method length: 25 lines
+     - Use meaningful variable and method names
+     - Include JavaDoc for public APIs
+
+   To format code:
+   ```bash
+   # Format all files
+   mvn initialize  # First time only, to set up node/npm
+   npm run format
+
+   # Check formatting (runs automatically during mvn verify)
+   npm run format:check
+   ```
 
 2. **Testing**
 
