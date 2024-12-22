@@ -145,7 +145,7 @@ The project uses Neo4j in two ways:
 
 4. **Git Workflow**
    - Create feature branches from main
-   - Use meaningful commit messages
+   - Use meaningful but simple one-line commit messages
    - Include tests with all changes
    - Submit pull requests for review
 
