@@ -105,10 +105,56 @@ After processing directives:
 
 ## CODING GUIDELINES
 
-- Apply clean coding principles
-- Apply SOLID principles
-- Keep method complexity to be no more than 5
-- Keep method length to be no more than 25 lines
-- Use TDD as an approach - wherever possible write tests first, and then build code to support those tests
-- Tests should ensure that changing the internal details doesn't require rewriting tests. Prefer component-level
+SOLID principles
+- Single Responsibility - a component (class, method, subsystem, service) should have a single responsibility - one reason to change, one set of clients, supporting a single overall goal. Do not create open-ended Helper/Util classes.
+
+- Open-Closed - to add functionality to a component, you can extend it rather than change it. Plug in a new class or a new method. Watch out for large if/then/else statements or case statements. If you have to keep adding code to an existing method, class or service for each new enhancement, you are not following this principle.
+
+- Liskov Substitution - Every implementation interface should be fully transparently replaceable with another. A caller shouldn't have to check to see what concrete implementation they are working with.
+
+- Interface Segregation - Keep an interface, which is a contract, as small and focused as possible. Don't try to be all things to all clients. You can have different interfaces for different clients.
+
+- Dependency Inversion - Dependencies are handed to me, rather than me creating them. This means do not use static methods, including singletons.
+
+Clean code
+- Let the code do the talking - Use small, well-named, single-responsibility methods, classes and fields so your code is readable and self-documenting. This includes extracting a long set of conditions in an if statement into its own method, just to explain your intent.
+- Principle of least surprise - Make things obvious. Don't change state in a getter or have some surprising side effect in a method call.
+
+Design principles
+- Loose coupling - use design patterns and SOLID principles to minimize hard-coded dependencies. 
+- Information hiding - hide complexity and details behind interfaces. Avoid exposing your internal mechanisms and artifacts through your interface. Deliver delicious food and hide the mess in the kitchen.
+- Deep modules - A good module has a simple interface that hides a lot of complexity. This increases information hiding and reduces coupling.
+- Composition over inheritance - inheritance introduces hard coupling. Use composition and dependency inversion.
+
+Build maintainable software
+- Write short methods - Limit the length of methods to 15 lines of code
+- Write simple methods - Limit the number of branch points per method to 4 (complexity of 5).
+- Write code once - "Number one in the stink parade is duplicated code" - Kent Beck and Martin Fowler, Bad Smells in Code. Be ruthless about eliminating code duplication. This includes boilerplate code where only one or two things vary from instance to instance of the code block. Design patterns and small focused methods and classes almost always help you remove this kind of duplication. 
+- Keep method interfaces small - Limit the number of parameters per method to at most 4. Do this by extracting parameters into objects. This improves maintainability because keeping the number of parameters low makes units easier to understand and reuse.
+
+Exception handling
+This is such an important section, as poorly handled exceptions can make production issues incredibly difficult to debug, causing more stress and business impact.
+
+- Don't swallow exceptions. Only catch an exception if you can fully handle it or if you are going to re-throw so you can provide more context
+- Include the exception cause. When you catch an exception and throw a new one, always include the original exception as a cause
+Don't return a default value on an exception. Do NOT catch an exception, log it, and then just return null or some default value unless you are absolutely positively sure that you are not hiding a real issue by doing so. Leaving a system in a bad state or not exposing issues can be a very serious problem.
+Don't log a re-thrown exception. If you catch an exception and throw a new one, do not log the exception. This just adds noise to the logs
+Prefer unchecked exceptions. Create new checked exceptions only if you believe the caller could handle and recover from the exception
+
+Thread safety
+Avoid shared state. Keep things within the scope of the current thread. Global classes, singletons with mutable state should be avoided at all costs. Keep classes small, simple and immutable.
+Know what you are doing. If you must use shared state, you need to be very very thorough that you are both maintaining thread safety and not causing performance issues. Have any code with shared state reviewed by a senior engineer. Also have it reviewed by an LLM; they are very good at catching issues and offering alternatives.
+
+Input validation
+- Public methods need all their inputs validated. A public method could be called by anyone. Protect your code by ensuring all inputs are as you expect them to be.
+
+Testing
+- Test the contract, not the internals. Your tests should support refactoring with confidence. If your tests have to be rewritten every time you refactor the internals, your tests are too tightly coupled to the internals. Avoid using Mockito.verify. Don't expose internal methods or data structures just so you can test them. 
+- Test in isolation. When you test a component, isolate it from its dependencies using mocks and fakes
+- Write clean tests. Apply the same coding principles to tests as you do to your mainline code. Build a domain-specific language of classes and methods to make the tests more expressive. Eliminate duplicated code ruthlessly. Have each test do one thing and name the test method based on what it does
+- Practice TDD. Write the test, have it fail, make it work, then refactor it to make it clean.
+
+- Make use of modern Java language features such as records, var, etc.
+- Make use of Lombok to reduce boilerplate code
+- Make use of mapstruct where it is useful to reduce boilerplate code
   integration tests against a public contract over highly detailed class-level unit tests.

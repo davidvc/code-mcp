@@ -1,18 +1,20 @@
-A common problem when working with coding assitants like Cline is they need to manually run file searches
+A common problem when working with coding assistants like Cline is they need to manually run file searches
 through the code to better understand the codebase.
 
 This can be slow and tedious.
 
-Also, sometimes the developer wants to ask questions about the overall code base. Some example quetsions
+Also, sometimes the developer wants to ask questions about the overall code base. Some example questions
 include:
 
 - Please summarize the key features and functionality of this codebase
 - Write a high level design document for this codebase, using object and sequence diagrams where useful
 - Write a summary of the key components of this codebase, with a paragraph or two for each component
-- What are some of the more problematic files, applying SOLID and clean coding principles
+- How do the components in this codebase interact with each other?
+- What are the key interfaces and abstractions used in this codebase?
 
-I would like to create an MCP plugin that Cline can use which allows Cline to easily ask questions about
-the codebase. This plugin could also be used by Claude Desktop so the developer can ask questions directly.
+I would like to create an MCP plugin that provides direct access to code structure and relationships through
+graph queries. This will allow LLMs like Cline and Claude Desktop to efficiently understand and reason about
+codebases by querying the graph database directly, rather than having to parse and analyze files manually.
 
 ## System Requirements
 
@@ -48,23 +50,22 @@ The code analysis system must support multiple programming languages through a p
 
    - Allow new language analyzers to be added without modifying core code
    - Each language plugin implements the core abstractions
-   - Plugins handle language-specific parsing and analysis
+   - Plugins handle language-specific parsing and understanding
    - Support for initial languages:
      - Java
      - Python
      - JavaScript/TypeScript
 
-3. Analysis Capabilities
+3. Graph Query Capabilities
 
-   - Static code analysis
-   - Dependency tracking
-   - Complexity metrics
-   - Documentation extraction
-   - Code quality assessment
+   - Direct access to code structure
+   - Type system queries
+   - Relationship traversal
+   - Documentation access
    - All capabilities must work consistently across supported languages
 
 4. Extensibility
    - Clear interfaces for adding new languages
-   - Ability to add language-specific analysis features
-   - Support for custom metrics and rules
+   - Ability to add language-specific features
+   - Support for custom graph queries
    - Plugin versioning and compatibility management

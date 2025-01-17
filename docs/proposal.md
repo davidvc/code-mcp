@@ -9,72 +9,67 @@ This proposal outlines an approach to create an MCP plugin that enables Cline an
 ### Architecture
 
 1. **Neo4j Graph Database**
-
    - Store code structure and relationships
    - Enable fast traversal and complex queries
-   - Support metrics calculation and caching
+   - Support efficient caching
 
 2. **Core Services**
-
    - Code Parser: Extract code structure and relationships
    - Neo4j Service: Interface with the graph database
-   - Query Service: Transform natural language questions into Cypher queries
+   - Query Service: Execute graph queries and return structured results
 
 3. **MCP Integration**
-   - Expose tools for common code analysis tasks
-   - Support both direct queries and high-level analysis requests
-   - Cache analysis results for improved performance
+   - Expose direct graph query tools
+   - Provide code structure tools
+   - Support relationship traversal operations
 
 ### Key Features
 
-1. **Code Structure Analysis**
+1. **Code Structure Understanding**
+   - Component relationships and hierarchies
+   - Type and function definitions
+   - Inheritance and implementation relationships
+   - Method calls and dependencies
+   - Documentation and comments
 
-   - Component relationships
-   - Dependency graphs
-   - Inheritance hierarchies
-   - Method call graphs
+2. **Semantic Analysis**
+   - Code organization and architecture
+   - Type system and interfaces
+   - Function signatures and parameters
+   - Variable scoping and visibility
 
-2. **Code Quality Metrics**
-
-   - Cyclomatic complexity
-   - Coupling and cohesion
-   - SOLID principle violations
-   - Code duplication
-
-3. **Natural Language Interface**
-   - Convert questions to graph queries
-   - Support common analysis patterns
-   - Provide context-aware responses
+3. **MCP Interface**
+   - Direct graph query tools
+   - Code structure tools
+   - Relationship traversal tools
 
 ## Benefits
 
-1. **Improved Performance**
-
-   - Pre-computed metrics and relationships
-   - Cached analysis results
+1. **Improved Code Understanding**
+   - Deep semantic understanding of code
+   - Rich context for code generation
+   - Accurate relationship mapping
    - Optimized graph queries
 
-2. **Better Understanding**
-
-   - Comprehensive code structure visualization
-   - Deep relationship analysis
-   - Quality metric insights
+2. **Better Code Generation**
+   - Structure-aware suggestions
+   - Style-consistent code
+   - Proper type usage
+   - Accurate API usage
 
 3. **Enhanced Productivity**
-   - Quick access to code insights
-   - Natural language interaction
-   - Automated analysis reports
+   - Direct access to code structure
+   - Efficient relationship queries
+   - Contextual code assistance
 
 ## Potential Drawbacks
 
 1. **Initial Setup Overhead**
-
    - Neo4j installation and configuration
    - Initial code parsing and graph population
    - Query pattern development
 
 2. **Maintenance Requirements**
-
    - Graph database updates
    - Query optimization
    - Pattern matching refinement
@@ -89,13 +84,11 @@ This proposal outlines an approach to create an MCP plugin that enables Cline an
 ### 1. File-based Analysis
 
 **Approach:**
-
 - Direct file system traversal
 - In-memory parsing and analysis
 - Results caching in files
 
 **Why Not Chosen:**
-
 - Slower for complex queries
 - Limited relationship analysis
 - Higher memory usage for large codebases
@@ -104,13 +97,11 @@ This proposal outlines an approach to create an MCP plugin that enables Cline an
 ### 2. SQL Database Approach
 
 **Approach:**
-
 - Relational database for code structure
 - SQL queries for analysis
 - Traditional table-based storage
 
 **Why Not Chosen:**
-
 - Less efficient for relationship queries
 - More complex query structure
 - Not optimized for graph traversal
@@ -121,7 +112,7 @@ This proposal outlines an approach to create an MCP plugin that enables Cline an
 The Neo4j-based approach is recommended because it:
 
 1. Provides optimal performance for relationship-heavy queries
-2. Enables complex analysis through simple Cypher queries
+2. Enables complex analysis through direct graph queries
 3. Supports natural evolution of the codebase understanding
 4. Scales well with codebase size and query complexity
 

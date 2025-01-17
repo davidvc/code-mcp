@@ -31,7 +31,7 @@ flowchart TB
 1. **Code Analyzer**
    - Parses source code into language-agnostic models
    - Extracts code structure and relationships
-   - Analyzes code metrics and quality
+   - Captures semantic information
    - Processes documentation and comments
 
 2. **Knowledge Graph**
@@ -41,10 +41,10 @@ flowchart TB
    - Enables efficient querying and traversal
 
 3. **Query Engine**
-   - Processes natural language queries
-   - Traverses knowledge graph
-   - Formats responses for clients
+   - Executes graph queries
+   - Provides structured results
    - Manages query caching
+   - Optimizes query performance
 
 4. **MCP Interface Layer**
    - Exposes analysis capabilities via MCP protocol
@@ -96,11 +96,11 @@ The system is designed to support multiple programming languages through a modul
    - Relationships
    - Metrics
 
-4. **Analysis Layer**
-   - Code quality metrics
-   - Complexity calculations
-   - Pattern detection
-   - Best practice validation
+4. **Semantic Layer**
+   - Type relationships
+   - Function signatures
+   - Variable scoping
+   - Code organization
 
 ### 2.3 Documentation Analysis
 
@@ -117,19 +117,19 @@ The system is designed to support multiple programming languages through a modul
    - Return value documentation
    - Cross-references
 
-### 2.4 Metrics and Analysis
+### 2.4 Semantic Understanding
 
-1. **Code Metrics**
-   - Complexity metrics
-   - Size metrics
-   - Documentation coverage
-   - Test coverage
+1. **Type System**
+   - Class and interface hierarchies
+   - Generic type parameters
+   - Type constraints and bounds
+   - Type inference
 
-2. **Quality Analysis**
-   - SOLID principles validation
-   - Design pattern detection
-   - Code smell identification
-   - Best practice checking
+2. **Code Structure**
+   - Module organization
+   - Namespace hierarchies
+   - Import relationships
+   - Dependency management
 
 ## 3. Knowledge Graph Design
 
@@ -195,11 +195,11 @@ The system is designed to support multiple programming languages through a modul
    - Method relationships
    - Variable usage
 
-2. **Metric Queries**
-   - Code complexity
-   - Documentation coverage
-   - Test coverage
-   - Quality metrics
+2. **Semantic Queries**
+   - Type relationships
+   - Function signatures
+   - Variable scoping
+   - Code organization
 
 3. **Documentation Queries**
    - API documentation
@@ -209,11 +209,11 @@ The system is designed to support multiple programming languages through a modul
 
 ### 4.2 Query Features
 
-1. **Natural Language Processing**
-   - Query understanding
-   - Context awareness
-   - Relevance ranking
-   - Result formatting
+1. **Query Interface**
+   - Direct graph queries
+   - Structured results
+   - Query optimization
+   - Result caching
 
 2. **Performance Optimization**
    - Query caching
@@ -226,27 +226,27 @@ The system is designed to support multiple programming languages through a modul
 ### 5.1 MCP Integration
 
 1. **Tools**
-   - Code analysis
-   - Documentation generation
-   - Metric calculation
-   - Quality assessment
+   - Graph query execution
+   - Structure traversal
+   - Relationship mapping
+   - Type system queries
 
 2. **Resources**
-   - Code summaries
-   - Documentation access
-   - Metric reports
-   - Analysis results
+   - Code structure data
+   - Documentation content
+   - Relationship data
+   - Type information
 
 ### 5.2 Client Integration
 
 1. **Cline Integration**
-   - Code understanding
-   - Documentation access
-   - Quality insights
-   - Refactoring suggestions
+   - Direct graph queries
+   - Structure traversal
+   - Type system access
+   - Relationship mapping
 
 2. **Claude Desktop Integration**
-   - Direct code queries
-   - Documentation browsing
-   - Metric visualization
-   - Analysis reports
+   - Graph query tools
+   - Structure access
+   - Type information
+   - Relationship data

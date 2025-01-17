@@ -1,25 +1,13 @@
 package com.code.analysis.core.model;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import lombok.Builder;
+import lombok.NonNull;
 
-/**
- * Represents a reference to another code element.
- * This class captures relationships between different parts of code.
- */
-@Builder
 public record Reference(
-  String id,
-  String name,
-  ReferenceKind kind,
-  Position position,
-  Map<String, Object> metadata
+    @NonNull ReferenceKind kind,
+    @NonNull String targetName
 ) {
-  public Reference {
-    metadata = Collections.unmodifiableMap(
-      new HashMap<>(metadata != null ? metadata : Collections.emptyMap())
-    );
-  }
+    // Record automatically provides:
+    // - Constructor
+    // - Getters (kind(), targetName())
+    // - equals(), hashCode(), toString()
 }
